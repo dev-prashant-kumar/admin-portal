@@ -1,50 +1,170 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { usePathname } from "next/navigation"
+import { useState } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 import {
   LayoutDashboard,
   BarChart3,
+  ClipboardList,
   Users,
-  ShoppingCart,
+  UserCheck,
+  UserX,
+  Shield,
+  Briefcase,
+  Clock,
+  AlertTriangle,
   FileText,
-  Mail,
-  MessageCircle,
+  CreditCard,
+  Receipt,
+  TrendingUp,
+  MessageCircleWarning,
+  Flag,
+  FileEdit,
+  Megaphone,
+  HelpCircle,
+  Activity,
+  Lock,
+  Settings,
+  ShieldCheck,
+  DatabaseBackup,
+  Menu,
   ChevronLeft,
-  ChevronDown,
-  Menu
-} from "lucide-react"
+} from "lucide-react";
 
 export default function Sidebar() {
+  const pathname = usePathname();
 
-  const pathname = usePathname()
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const [collapsed, setCollapsed] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const sidebarMenu = [
+    {
+      title: "Overview",
+      items: [
+        { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+        { label: "Analytics", icon: BarChart3, path: "/admin/analytics" },
+        {
+          label: "Activity Logs",
+          icon: ClipboardList,
+          path: "/admin/activity",
+        },
+      ],
+    },
 
-  const [overviewOpen, setOverviewOpen] = useState(true)
-  const [commerceOpen, setCommerceOpen] = useState(false)
-  const [appsOpen, setAppsOpen] = useState(false)
+    {
+      title: "Users",
+      items: [
+        { label: "Workers", icon: Users, path: "/admin/workers" },
+        { label: "Recruiters", icon: UserCheck, path: "/admin/recruiters" },
+        { label: "Admins", icon: Shield, path: "/admin/admins" },
+        { label: "Blocked Users", icon: UserX, path: "/admin/blocked-users" },
+      ],
+    },
 
-  const menuItem =
-    "flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition cursor-pointer"
+    {
+      title: "Jobs",
+      items: [
+        { label: "All Jobs", icon: Briefcase, path: "/admin/jobs" },
+        {
+          label: "Pending Approvals",
+          icon: Clock,
+          path: "/admin/jobs/pending",
+        },
+        {
+          label: "Reported Jobs",
+          icon: AlertTriangle,
+          path: "/admin/jobs/reported",
+        },
+      ],
+    },
 
-  const activeItem =
-    "flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500/10 via-orange-500/10 to-green-500/10 text-blue-600 font-medium border-l-4 border-blue-500"
+    {
+      title: "Recruitment",
+      items: [
+        { label: "Applications", icon: FileText, path: "/admin/applications" },
+        { label: "Hired Candidates", icon: UserCheck, path: "/admin/hired" },
+        { label: "Rejected Candidates", icon: UserX, path: "/admin/rejected" },
+      ],
+    },
+
+    {
+      title: "Finance",
+      items: [
+        {
+          label: "Transactions",
+          icon: CreditCard,
+          path: "/admin/transactions",
+        },
+        { label: "Invoices", icon: Receipt, path: "/admin/invoices" },
+        {
+          label: "Revenue Analytics",
+          icon: TrendingUp,
+          path: "/admin/revenue",
+        },
+      ],
+    },
+
+    {
+      title: "Support",
+      items: [
+        {
+          label: "Complaints",
+          icon: MessageCircleWarning,
+          path: "/admin/complaints",
+        },
+        { label: "Reports", icon: Flag, path: "/admin/reports" },
+      ],
+    },
+
+    {
+      title: "Content",
+      items: [
+        { label: "CMS", icon: FileEdit, path: "/admin/cms" },
+        {
+          label: "Announcements",
+          icon: Megaphone,
+          path: "/admin/announcements",
+        },
+        { label: "FAQ", icon: HelpCircle, path: "/admin/faq" },
+      ],
+    },
+
+    {
+      title: "System",
+      items: [
+        {
+          label: "System Monitoring",
+          icon: Activity,
+          path: "/admin/monitoring",
+        },
+        { label: "Backups", icon: DatabaseBackup, path: "/admin/backups" },
+      ],
+    },
+
+    {
+      title: "Settings",
+      items: [
+        { label: "Admin Roles", icon: ShieldCheck, path: "/admin/roles" },
+        { label: "Security", icon: Lock, path: "/admin/security" },
+        { label: "Platform Settings", icon: Settings, path: "/admin/settings" },
+      ],
+    },
+  ];
 
   return (
     <>
       {/* MOBILE MENU BUTTON */}
 
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 bg-white shadow p-2 rounded-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 bg-slate-900 text-white shadow p-2 rounded-lg"
         onClick={() => setMobileOpen(true)}
       >
         <Menu size={20} />
       </button>
 
-      {/* OVERLAY MOBILE */}
+      {/* MOBILE OVERLAY */}
 
       {mobileOpen && (
         <div
@@ -56,236 +176,107 @@ export default function Sidebar() {
       {/* SIDEBAR */}
 
       <aside
-        className={`fixed lg:relative z-50 h-screen bg-white border-r transition-all duration-300 ease-in-out
+        className={`fixed lg:relative z-50 h-screen flex flex-col
+        bg-white dark:bg-slate-950
+        border-r border-slate-200 dark:border-slate-800
+        transition-all duration-300
         ${collapsed ? "w-[85px]" : "w-[260px]"}
-        ${mobileOpen ? "left-0" : "-left-full lg:left-0"}
-        `}
+        ${mobileOpen ? "left-0" : "-left-full lg:left-0"}`}
       >
-
         {/* COLLAPSE BUTTON */}
 
         <ChevronLeft
-          className={`absolute -right-3 top-24 z-50 flex h-7 w-7 items-center justify-center rounded-full border bg-white shadow cursor-pointer transition-all duration-300
+          className={`absolute -right-3 top-24 z-50 h-7 w-7 rounded-full border
+          bg-white dark:bg-slate-900
+          border-slate-200 dark:border-slate-700
+          shadow cursor-pointer transition-all duration-300
           ${collapsed ? "rotate-180" : ""}`}
           onClick={() => setCollapsed(!collapsed)}
         />
 
         {/* HEADER */}
 
-        <div className="flex items-center gap-3 px-5 py-4 border-b">
-
-          <div className="w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 via-orange-500 to-green-500 flex items-center justify-center text-white font-bold">
-            F
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="w-9 h-9 rounded-lg bg-linear-to-r from-indigo-500 via-purple-500 to-blue-500 flex items-center justify-center text-white font-bold">
+            12th
           </div>
 
           {!collapsed && (
             <div>
-              <p className="font-semibold">12thFailJobs</p>
-              <p className="text-xs text-gray-400">ADMIN</p>
+              <p className="font-semibold text-slate-800 dark:text-white">
+                12thFailjobs 
+              </p>
+              <p className="text-xs text-slate-400">Powered by YugaYatra</p>
             </div>
           )}
-
         </div>
 
         {/* MENU */}
 
-        <div className="overflow-y-auto h-[calc(100vh-80px)] p-3">
+        <div className="flex-1 overflow-y-auto sidebar-scroll p-3 pr-2">
+          {sidebarMenu.map((section) => (
+            <div key={section.title} className="mt-6">
+              {!collapsed && (
+                <p className="text-xs text-slate-400 px-3 mb-2 tracking-wider">
+                  {section.title}
+                </p>
+              )}
 
-          {/* OVERVIEW */}
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const active = pathname === item.path;
 
-          {!collapsed && (
-            <p className="text-xs text-gray-400 px-3 mb-2 mt-2">OVERVIEW</p>
-          )}
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.path}
+                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition
+  ${
+    active
+      ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-600 "
+      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+  }`}
+                  >
+                    <Icon size={18} />
 
-          <div
-            className="flex items-center justify-between px-3 py-2 cursor-pointer"
-            onClick={() => setOverviewOpen(!overviewOpen)}
-          >
-            {!collapsed && <span className="text-sm font-medium">Overview</span>}
-
-            {!collapsed && (
-              <ChevronDown
-                size={16}
-                className={`transition ${overviewOpen ? "rotate-180" : ""}`}
-              />
-            )}
-          </div>
-
-          {/* Animated dropdown */}
-
-          <div
-            className={`overflow-hidden transition-all duration-300 ${
-              overviewOpen ? "max-h-96" : "max-h-0"
-            }`}
-          >
-
-            <MenuItem
-              icon={<LayoutDashboard size={18} />}
-              label="Dashboard"
-              collapsed={collapsed}
-              active={pathname === "/admin/dashboard"}
-            />
-
-            <MenuItem
-              icon={<BarChart3 size={18} />}
-              label="Analytics"
-              collapsed={collapsed}
-              active={pathname === "/admin/analytics"}
-            />
-
-            <MenuItem
-              icon={<Users size={18} />}
-              label="CRM"
-              collapsed={collapsed}
-              active={pathname === "/admin/crm"}
-            />
-
-          </div>
-
-          {/* COMMERCE */}
-
-          {!collapsed && (
-            <p className="text-xs text-gray-400 px-3 mt-6 mb-2">COMMERCE</p>
-          )}
-
-          <div
-            className="flex items-center justify-between px-3 py-2 cursor-pointer"
-            onClick={() => setCommerceOpen(!commerceOpen)}
-          >
-
-            {!collapsed && <span className="text-sm font-medium">Commerce</span>}
-
-            {!collapsed && (
-              <ChevronDown
-                size={16}
-                className={`transition ${commerceOpen ? "rotate-180" : ""}`}
-              />
-            )}
-
-          </div>
-
-          <div
-            className={`overflow-hidden transition-all duration-300 ${
-              commerceOpen ? "max-h-96" : "max-h-0"
-            }`}
-          >
-
-            <MenuItem
-              icon={<ShoppingCart size={18} />}
-              label="Orders"
-              collapsed={collapsed}
-              active={pathname === "/admin/orders"}
-              badge="12"
-            />
-
-            <MenuItem
-              icon={<Users size={18} />}
-              label="Customers"
-              collapsed={collapsed}
-              active={pathname === "/admin/customers"}
-            />
-
-            <MenuItem
-              icon={<FileText size={18} />}
-              label="Invoices"
-              collapsed={collapsed}
-              active={pathname === "/admin/invoices"}
-            />
-
-          </div>
-
-          {/* APPS */}
-
-          {!collapsed && (
-            <p className="text-xs text-gray-400 px-3 mt-6 mb-2">APPS</p>
-          )}
-
-          <div
-            className="flex items-center justify-between px-3 py-2 cursor-pointer"
-            onClick={() => setAppsOpen(!appsOpen)}
-          >
-
-            {!collapsed && <span className="text-sm font-medium">Apps</span>}
-
-            {!collapsed && (
-              <ChevronDown
-                size={16}
-                className={`transition ${appsOpen ? "rotate-180" : ""}`}
-              />
-            )}
-
-          </div>
-
-          <div
-            className={`overflow-hidden transition-all duration-300 ${
-              appsOpen ? "max-h-96" : "max-h-0"
-            }`}
-          >
-
-            <MenuItem
-              icon={<Mail size={18} />}
-              label="Mail"
-              collapsed={collapsed}
-              active={pathname === "/admin/mail"}
-            />
-
-            <MenuItem
-              icon={<MessageCircle size={18} />}
-              label="Chat"
-              collapsed={collapsed}
-              active={pathname === "/admin/chat"}
-            />
-
-          </div>
-
+                    {!collapsed && <span>{item.label}</span>}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </div>
 
+        {/* PROFILE SECTION */}
+
+        <div className="border-t border-slate-200 dark:border-slate-800 p-3">
+          <div className="flex items-center gap-3">
+            <img
+              src="/admin-avatar.png"
+              className="w-10 h-10 rounded-full object-cover"
+            />
+
+            {!collapsed && (
+              <>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-white">
+                    Prashant Kumar
+                  </p>
+                  <p className="text-xs text-slate-400">Super Admin</p>
+                </div>
+
+                <button
+                  className="text-xs px-2 py-1 rounded-md
+                  bg-red-500/10 text-red-500
+                  hover:bg-red-500 hover:text-white transition"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       </aside>
     </>
-  )
-}
-
-type MenuItemProps = {
-  icon: React.ReactNode
-  label: string
-  collapsed: boolean
-  active: boolean
-  badge?: string
-}
-
-function MenuItem({ icon, label, collapsed, active, badge }: MenuItemProps) {
-
-  return (
-    <div className="relative group">
-
-      <div
-        className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition
-        ${active
-          ? "bg-linear-to-r from-blue-500/10 via-orange-500/10 to-green-500/10 text-blue-600 border-l-4 border-blue-500"
-          : "text-gray-600 hover:bg-gray-100"
-        }`}
-      >
-
-        {icon}
-
-        {!collapsed && <span>{label}</span>}
-
-        {!collapsed && badge && (
-          <span className="ml-auto text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">
-            {badge}
-          </span>
-        )}
-
-      </div>
-
-      {/* TOOLTIP */}
-
-      {collapsed && (
-        <div className="absolute left-14 top-1/2 -translate-y-1/2 whitespace-nowrap bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none">
-          {label}
-        </div>
-      )}
-
-    </div>
-  )
+  );
 }
