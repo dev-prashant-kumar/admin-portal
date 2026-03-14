@@ -1,11 +1,79 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabaseClient"
+import toast from "react-hot-toast";
 
 export default function AdminAuth() {
 
+  const router = useRouter()
+
   const [isLogin, setIsLogin] = useState(true)
 
+  const [name,setName] = useState("")
+  const [email,setEmail] = useState("")
+  const [password,setPassword] = useState("")
+  const [confirmPassword,setConfirmPassword] = useState("")
+  const [loading,setLoading] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+
+  e.preventDefault()
+  setLoading(true)
+
+  try {
+
+    if (isLogin) {
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (error) throw error
+
+      toast.success("Login successful")
+
+      router.push("/admin/dashboard")
+
+    } else {
+
+      if (password !== confirmPassword) {
+        toast.error("Passwords do not match")
+        setLoading(false)
+        return
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password
+      })
+
+      if (error) throw error
+
+      await supabase
+        .from("admin_users")
+        .insert({
+          email,
+          name,
+          role: "super_admin"
+        })
+
+      toast.success("Admin account created")
+
+      setIsLogin(true)
+
+    }
+
+  } catch (err: any) {
+
+    toast.error(err.message)
+
+  }
+
+  setLoading(false)
+}
   return (
 
     <div
@@ -13,13 +81,11 @@ export default function AdminAuth() {
       style={{ backgroundImage: "url('/admin-bg.png')" }}
     >
 
-      {/* Background overlay */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
 
-      {/* MAIN CONTENT */}
       <div className="relative flex w-[1000px] rounded-3xl overflow-hidden shadow-2xl">
 
-        {/* LEFT SECTION */}
+        {/* LEFT */}
         <div className="w-1/2 flex items-center justify-center p-12">
 
           <div className="bg-white/20 backdrop-blur-xl border border-white/30 p-10 rounded-3xl text-center text-white shadow-xl">
@@ -35,11 +101,8 @@ export default function AdminAuth() {
             <div className="mt-6 space-y-3 text-white/90">
 
               <p>• Manage workers and recruiters</p>
-
               <p>• Approve or reject job listings</p>
-
               <p>• Monitor complaints and reports</p>
-
               <p>• Track platform activity</p>
 
             </div>
@@ -48,8 +111,7 @@ export default function AdminAuth() {
 
         </div>
 
-
-        {/* RIGHT SECTION */}
+        {/* RIGHT */}
         <div className="w-1/2 flex items-center justify-center bg-white p-10">
 
           <div className="w-[350px]">
@@ -58,38 +120,51 @@ export default function AdminAuth() {
               {isLogin ? "Admin Login" : "Admin Signup"}
             </h2>
 
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
 
               {!isLogin && (
                 <input
                   type="text"
                   placeholder="Admin Name"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                  value={name}
+                  onChange={(e)=>setName(e.target.value)}
+                  className="w-full p-3 border rounded-lg"
                 />
               )}
 
               <input
                 type="email"
                 placeholder="Admin Email"
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
+                className="w-full p-3 border rounded-lg"
               />
 
               <input
                 type="password"
                 placeholder="Password"
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                value={password}
+                onChange={(e)=>setPassword(e.target.value)}
+                className="w-full p-3 border rounded-lg"
               />
 
               {!isLogin && (
                 <input
                   type="password"
                   placeholder="Confirm Password"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                  value={confirmPassword}
+                  onChange={(e)=>setConfirmPassword(e.target.value)}
+                  className="w-full p-3 border rounded-lg"
                 />
               )}
 
-              <button className="w-full py-3 rounded-lg bg-gradient-to-r from-blue-500 via-orange-500 to-green-500 text-white font-semibold">
-                {isLogin ? "Login" : "Create Admin"}
+              <button
+                disabled={loading}
+                className="w-full py-3 rounded-lg bg-gradient-to-r from-blue-500 via-orange-500 to-green-500 text-white font-semibold"
+              >
+
+                {loading ? "Please wait..." : isLogin ? "Login" : "Create Admin"}
+
               </button>
 
             </form>
@@ -117,6 +192,5 @@ export default function AdminAuth() {
       </div>
 
     </div>
-
   )
 }

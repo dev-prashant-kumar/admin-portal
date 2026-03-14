@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Inter } from "next/font/google"
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "@/context/AuthContext"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,7 +37,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans`}>
+         <AuthProvider>
         {children}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 3000,
+          }}
+        />
+        </AuthProvider>
       </body>
     </html>
   );

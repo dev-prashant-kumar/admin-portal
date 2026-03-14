@@ -32,6 +32,8 @@ import {
   Menu,
   ChevronLeft,
 } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
+import router from "next/router";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -43,7 +45,7 @@ export default function Sidebar() {
     {
       title: "Overview",
       items: [
-        { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+        { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
         { label: "Analytics", icon: BarChart3, path: "/admin/analytics" },
         {
           label: "Activity Logs",
@@ -152,6 +154,13 @@ export default function Sidebar() {
       ],
     },
   ];
+
+  async function logout(){
+
+  await supabase.auth.signOut()
+
+  router.push("/admin-login")
+}
 
   return (
     <>
@@ -265,7 +274,7 @@ export default function Sidebar() {
                   <p className="text-xs text-slate-400">Super Admin</p>
                 </div>
 
-                <button
+                <button onClick={logout}
                   className="text-xs px-2 py-1 rounded-md
                   bg-red-500/10 text-red-500
                   hover:bg-red-500 hover:text-white transition"
