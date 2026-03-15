@@ -1,29 +1,45 @@
-import { Card, CardContent } from "@/components/ui/card"
+"use client"
+import { useAuth } from "@/context/AuthContext";
+import QuickStats from "./quickStats";
+import RevenueChart from "./revenueChart";
+import SprintProgress from "./sprintProgress";
+import TeamActivity from "./teamActivity";
 
 export default function DashboardPage() {
+  const { admin } = useAuth();
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div className="space-y-6 ">
 
-  <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
-    <p className="text-sm text-slate-500">Total Workers</p>
-    <h2 className="text-3xl font-bold mt-2">1,254</h2>
-  </div>
+      {/* Gradient Header */}
+      <div className="rounded-2xl p-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 text-white">
 
-  <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
-    <p className="text-sm text-slate-500">Total Recruiters</p>
-    <h2 className="text-3xl font-bold mt-2">348</h2>
-  </div>
+        <h1 className="text-2xl font-semibold">
+          Good morning, {admin?.name}
+        </h1>
 
-  <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
-    <p className="text-sm text-slate-500">Active Jobs</p>
-    <h2 className="text-3xl font-bold mt-2">96</h2>
-  </div>
+        <p className="text-sm opacity-80 mt-1 mb-6">
+          Here's what's happening today.
+        </p>
 
-  <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
-    <p className="text-sm text-slate-500">Pending Approvals</p>
-    <h2 className="text-3xl font-bold mt-2">12</h2>
-  </div>
+        <QuickStats />
 
-</div>
-  )
+      </div>
+
+      {/* Dashboard Content */}
+      <div className="grid lg:grid-cols-3 gap-6">
+
+        <div className="lg:col-span-2">
+          <RevenueChart />
+        </div>
+
+        <div className="space-y-6">
+          <SprintProgress />
+          <TeamActivity />
+        </div>
+
+      </div>
+
+    </div>
+  );
 }

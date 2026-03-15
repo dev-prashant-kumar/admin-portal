@@ -1,23 +1,35 @@
-import Sidebar from "@/components/sidebar/sidebar"
-import Navbar from "@/components/navbar/navbar"
+import Navbar from "@/components/navbar/navbar";
+import Sidebar from "@/components/sidebar/sidebar";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
 
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex">
+    <div className="h-screen flex overflow-hidden">
 
-      <Sidebar />
+      {/* Sidebar */}
+      <div className="w-64 border-r">
+        <Sidebar/>
+      </div>
 
-      <div className="flex-1">
+      {/* Right side */}
+      <div className="flex-1 flex flex-col">
 
-        <Navbar />
+        {/* Top Navbar */}
+        <div>
+          <Navbar/>
+        </div>
 
-        <main className="p-6">
+        {/* Scrollable Content */}
+        <main className="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-slate-950 scroll-smooth">
           {children}
         </main>
 
       </div>
 
     </div>
-  )
+  );
 }

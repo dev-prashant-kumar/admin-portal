@@ -124,7 +124,6 @@ export default function Navbar() {
         <div className="flex items-center gap-2 pl-3 border-l border-slate-200 dark:border-slate-800">
           <img
             src={
-              admin?.profile_pic ||
               `https://api.dicebear.com/7.x/initials/svg?seed=${admin?.name}`
             }
             alt={admin?.name}
