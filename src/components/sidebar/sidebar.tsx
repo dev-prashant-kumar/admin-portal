@@ -42,7 +42,6 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { admin } = useAuth();
-  console.log(admin);
 
   const sidebarMenu = [
     {
@@ -205,7 +204,7 @@ export default function Sidebar() {
         />
         {/* HEADER */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="w-9 h-9 rounded-lg bg-linear-to-r from-indigo-500 via-purple-500 to-blue-500 flex items-center justify-center text-white font-bold">
+          <div className="w-9 h-9 rounded-lg bg-linear-to-r from-blue-600 via-orange-500 to-green-600 flex items-center justify-center text-white font-bold">
             12th
           </div>
 
@@ -233,31 +232,37 @@ export default function Sidebar() {
                 const active = pathname === item.path;
 
                 return (
-                  <Link
-                    key={item.label}
-                    href={item.path}
-                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition
-  ${
-    active
-      ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-600 "
-      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-  }`}
-                  >
-                    <Icon size={18} />
-
-                    {!collapsed && <span>{item.label}</span>}
-                  </Link>
-                );
+    <Link
+      key={item.label}
+      href={item.path}
+      className={`
+        group relative flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all
+        ${
+          active
+            ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-medium"
+            : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
+        }
+      `}
+    >
+      {/* Active Indicator: A simple vertical pill */}
+      {active && (
+        <div className="absolute left-0 w-1 h-6 bg-indigo-500 rounded-r-full" />
+      )}
+      
+      <Icon size={18} className={active ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"} />
+      {!collapsed && <span>{item.label}</span>}
+    </Link>
+  );
               })}
             </div>
           ))}
         </div>
         {/* PROFILE SECTION */}
-        
+
         <div className="border-t border-slate-200 dark:border-slate-800 p-3">
           <div className="flex items-center gap-3">
             <img
-              src="/admin-avatar.png"
+              src={`https://api.dicebear.com/7.x/initials/svg?seed=${admin?.name}`}
               className="w-10 h-10 rounded-full object-cover"
             />
 
@@ -269,7 +274,7 @@ export default function Sidebar() {
                   </p>
 
                   <p className="text-xs text-slate-400 capitalize">
-                    {admin.role.replace("_", " ")}
+                    {admin?.role_name}
                   </p>
                 </div>
 

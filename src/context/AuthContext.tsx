@@ -4,9 +4,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 type Admin = {
+  id: string;
   name: string;
-  role_id: string;
   email: string;
+  role_id: string;
+  role_name: string;
+  role_description: string;
 };
 
 type AuthContextType = {
@@ -24,32 +27,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Inside your useEffect in AuthContext.tsx
-async function fetchAdmin() {
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+    async function fetchAdmin() {
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
 
-  if (userError || !userData?.user) {
-    setLoading(false);
-    return;
-  }
+      if (sessionError || !sessionData?.session) {
+        setLoading(false);
+        return;
+      }
 
-  // Use RPC instead of .from() to bypass the recursive RLS policy
-  const { data, error } = await supabase.rpc('get_current_admin');
+      const { data, error } = await supabase.rpc("get_current_admin");
 
-  if (error) {
-    console.error("Admin fetch error:", error);
-    setLoading(false);
-    return;
-  }
+      if (error) {
+        setLoading(false);
+        return;
+      }
 
-  // RPC returns an array, so we grab the first item
-  const adminData = data && data.length > 0 ? data[0] : null;
-
-  setAdmin(adminData);
-  setLoading(false);
-}
+      const adminData = data && data.length > 0 ? data[0] : null;
+      setAdmin(adminData);
+      setLoading(false);
+    }
 
     fetchAdmin();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      fetchAdmin();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (
