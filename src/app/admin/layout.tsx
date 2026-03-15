@@ -11,7 +11,7 @@ export default function AdminLayout({
     <div className="h-screen flex overflow-hidden">
 
       {/* Sidebar */}
-      <div className="w-64 border-r">
+      <div className="border-r">
         <Sidebar/>
       </div>
 
