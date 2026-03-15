@@ -34,12 +34,15 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import router from "next/router";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { admin } = useAuth();
+  console.log(admin);
 
   const sidebarMenu = [
     {
@@ -155,12 +158,11 @@ export default function Sidebar() {
     },
   ];
 
-  async function logout(){
+  async function logout() {
+    await supabase.auth.signOut();
 
-  await supabase.auth.signOut()
-
-  router.push("/admin-login")
-}
+    router.push("/admin-login");
+  }
 
   return (
     <>
@@ -193,7 +195,6 @@ export default function Sidebar() {
         ${mobileOpen ? "left-0" : "-left-full lg:left-0"}`}
       >
         {/* COLLAPSE BUTTON */}
-
         <ChevronLeft
           className={`absolute -right-3 top-24 z-50 h-7 w-7 rounded-full border
           bg-white dark:bg-slate-900
@@ -202,9 +203,7 @@ export default function Sidebar() {
           ${collapsed ? "rotate-180" : ""}`}
           onClick={() => setCollapsed(!collapsed)}
         />
-
         {/* HEADER */}
-
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-slate-800">
           <div className="w-9 h-9 rounded-lg bg-linear-to-r from-indigo-500 via-purple-500 to-blue-500 flex items-center justify-center text-white font-bold">
             12th
@@ -213,15 +212,13 @@ export default function Sidebar() {
           {!collapsed && (
             <div>
               <p className="font-semibold text-slate-800 dark:text-white">
-                12thFailjobs 
+                12thFailjobs
               </p>
               <p className="text-xs text-slate-400">Powered by YugaYatra</p>
             </div>
           )}
         </div>
-
         {/* MENU */}
-
         <div className="flex-1 overflow-y-auto sidebar-scroll p-3 pr-2">
           {sidebarMenu.map((section) => (
             <div key={section.title} className="mt-6">
@@ -255,9 +252,8 @@ export default function Sidebar() {
             </div>
           ))}
         </div>
-
         {/* PROFILE SECTION */}
-
+        
         <div className="border-t border-slate-200 dark:border-slate-800 p-3">
           <div className="flex items-center gap-3">
             <img
@@ -265,19 +261,23 @@ export default function Sidebar() {
               className="w-10 h-10 rounded-full object-cover"
             />
 
-            {!collapsed && (
+            {!collapsed && admin && (
               <>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-slate-800 dark:text-white">
-                    Prashant Kumar
+                    {admin.name}
                   </p>
-                  <p className="text-xs text-slate-400">Super Admin</p>
+
+                  <p className="text-xs text-slate-400 capitalize">
+                    {admin.role.replace("_", " ")}
+                  </p>
                 </div>
 
-                <button onClick={logout}
+                <button
+                  onClick={logout}
                   className="text-xs px-2 py-1 rounded-md
-                  bg-red-500/10 text-red-500
-                  hover:bg-red-500 hover:text-white transition"
+          bg-red-500/10 text-red-500
+          hover:bg-red-500 hover:text-white transition"
                 >
                   Logout
                 </button>

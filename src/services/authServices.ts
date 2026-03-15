@@ -1,52 +1,45 @@
 import { supabase } from "@/lib/supabaseClient"
 
-// SIGNUP
-export const signupAdmin = async (email: string, password: string) => {
-  return await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: undefined // OTP mode
-    }
-  });
-};
+/* LOGIN ADMIN */
 
-// VERIFY OTP
-export const verifyOtpService = async (email: string, otp: string) => {
-  return await supabase.auth.verifyOtp({
-    email,
-    token: otp,
-    type: "email"
-  });
-};
+export async function loginAdmin(email: string, password: string) {
 
-// LOGIN
-export const loginAdmin = async (email: string, password: string) => {
-  return await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password
-  });
-};
+  })
 
-export const createAdmin = async (userId: string, email: string) => {
-  return await supabase.from("admin_users").insert([
-    {
-      id: userId,
-      email: email,
-      role: "user"
-    }
-  ]);
-};
-
-export async function logoutAdmin() {
-  const { error } = await supabase.auth.signOut()
   if (error) {
     throw new Error(error.message)
   }
 
+  return data
 }
 
-export async function getCurrentAdmin() {
-  const { data } = await supabase.auth.getUser()
+
+/* LOGOUT ADMIN */
+
+export async function logoutAdmin() {
+
+  const { error } = await supabase.auth.signOut()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return true
+}
+
+
+/* GET CURRENT USER */
+
+export async function getCurrentUser() {
+
+  const { data, error } = await supabase.auth.getUser()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
   return data.user
 }
