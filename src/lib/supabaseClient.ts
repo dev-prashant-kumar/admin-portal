@@ -1,10 +1,17 @@
-import { createClient } from "@supabase/supabase-js"
+import { createBrowserClient } from "@supabase/ssr"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+let browserClient: ReturnType<typeof createBrowserClient> | undefined
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  db: {
-    schema: 'public' // This forces the client to use public regardless of dashboard settings
-  }
-})
+export const getSupabaseBrowserClient = () => {
+  if (browserClient) return browserClient
+
+  browserClient = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  return browserClient
+}
+
+// Export a constant for easy use, but the function ensures it's a singleton
+export const supabase = getSupabaseBrowserClient()

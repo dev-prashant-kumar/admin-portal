@@ -1,5 +1,9 @@
-// lib/auth.ts
-import { supabase } from "@/lib/supabaseClient"
+import { createBrowserClient } from "@supabase/ssr"
+
+const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 /* LOGIN ADMIN */
 export async function loginAdmin(email: string, password: string) {
@@ -8,21 +12,22 @@ export async function loginAdmin(email: string, password: string) {
     password,
   })
 
-  if (error) throw new Error(error.message)
-
+  if (error) throw error 
   return data
 }
 
 /* LOGOUT ADMIN */
 export async function logoutAdmin() {
   const { error } = await supabase.auth.signOut()
-  if (error) throw new Error(error.message)
+  if (error) throw error
 
   window.location.href = "/admin-login"
 }
 
-/* GET CURRENT USER (SAFE) */
+/* GET CURRENT USER (SECURE) */
 export async function getCurrentUser() {
-  const { data } = await supabase.auth.getSession()
-  return data.session?.user ?? null
+  const { data: { user }, error } = await supabase.auth.getUser()
+  
+  if (error || !user) return null
+  return user
 }
