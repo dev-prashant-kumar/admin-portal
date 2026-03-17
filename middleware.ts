@@ -28,19 +28,20 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // check session
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
 
-  if (!user) {
+  if (!session) {
     return NextResponse.redirect(new URL("/admin-login", request.url))
   }
 
-  // check admin role
+  const user = session.user
+
+  // ✅ check admin
   const { data: admin } = await supabase
     .from("admin_users")
-    .select("role")
+    .select("role_id")
     .eq("email", user.email)
     .single()
 
