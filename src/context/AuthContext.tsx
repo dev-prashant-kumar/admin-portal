@@ -26,34 +26,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchAdmin() {
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
+  const fetchAdmin = async () => {
+    const { data, error } = await supabase.rpc("get_current_admin");
 
-      if (sessionError || !sessionData?.session) {
-        setLoading(false);
-        return;
-      }
-
-      const { data, error } = await supabase.rpc("get_current_admin");
-
-      if (error) {
-        setLoading(false);
-        return;
-      }
-
-      const adminData = data && data.length > 0 ? data[0] : null;
-      setAdmin(adminData);
+    if (error) {
+      setAdmin(null);
       setLoading(false);
+      return;
     }
 
-    fetchAdmin();
+    const adminData = data && data.length > 0 ? data[0] : null;
+    setAdmin(adminData);
+    setLoading(false);
+  };
 
+  useEffect(() => {
+    // 🔥 Get initial session properly
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        fetchAdmin();
+      } else {
+        setLoading(false);
+      }
+    });
+
+    // 🔥 Listen for login/logout
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      fetchAdmin();
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        fetchAdmin();
+      } else {
+        setAdmin(null);
+        setLoading(false);
+      }
     });
 
     return () => {
