@@ -21,7 +21,7 @@ export default function AdminAuth() {
 
       toast.success("Login successful");
 
-      router.push("/admin/dashboard");
+      window.location.href = "/admin/dashboard"
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message);
