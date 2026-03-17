@@ -33,7 +33,6 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
-import router from "next/router";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Sidebar() {

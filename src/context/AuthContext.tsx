@@ -40,32 +40,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   };
 
-  useEffect(() => {
-    // 🔥 Get initial session properly
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        fetchAdmin();
-      } else {
-        setLoading(false);
-      }
-    });
+useEffect(() => {
+  const init = async () => {
+    // ⏳ small delay fixes hydration issue
+    await new Promise((res) => setTimeout(res, 100));
 
-    // 🔥 Listen for login/logout
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        fetchAdmin();
-      } else {
-        setAdmin(null);
-        setLoading(false);
-      }
-    });
+    const { data } = await supabase.auth.getSession();
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+    if (data.session) {
+      fetchAdmin();
+    } else {
+      setLoading(false);
+    }
+  };
+
+  init();
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    if (session) fetchAdmin();
+    else {
+      setAdmin(null);
+      setLoading(false);
+    }
+  });
+
+  return () => subscription.unsubscribe();
+}, []);
 
   return (
     <AuthContext.Provider value={{ admin, loading }}>
