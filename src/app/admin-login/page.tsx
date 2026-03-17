@@ -123,7 +123,8 @@ export default function AdminAuth() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 via-orange-500 to-green-600 text-white font-bold shadow-lg hover:opacity-90 transition-opacity disabled:grayscale"
+                // Removed 'disabled:grayscale' to keep the gradient visible
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 via-orange-500 to-green-600 text-white font-bold shadow-lg hover:opacity-90 transition-opacity disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
