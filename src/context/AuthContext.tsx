@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
+// 1. Import the specific types from Supabase
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
 type Admin = {
   id: string
@@ -28,9 +30,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function fetchAdmin() {
-      const { data } = await supabase.auth.getSession()
+      // Using getUser() for better security as discussed before
+      const { data: { user } } = await supabase.auth.getUser()
 
-      if (!data.session) {
+      if (!user) {
         setAdmin(null)
         setLoading(false)
         return
@@ -38,17 +41,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { data: adminData } = await supabase.rpc("get_current_admin")
 
+      // RPC usually returns an array or single object depending on your SQL logic
       setAdmin(adminData?.[0] || null)
       setLoading(false)
     }
 
     fetchAdmin()
 
+    // 2. Explicitly type the parameters here
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) fetchAdmin()
-      else {
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+      if (session) {
+        fetchAdmin()
+      } else {
         setAdmin(null)
         setLoading(false)
       }
