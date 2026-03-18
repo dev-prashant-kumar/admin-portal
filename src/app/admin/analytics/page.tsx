@@ -1,183 +1,229 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
+import {
+  getTotalUsers,
+  getTotalJobs,
+  getTotalComplaints,
+  getJobsOverTime,
+  getUserGrowth,
+  getJobStatusStats,
+  getTopCategories
+} from "@/lib/api/analytics"
 
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  CartesianGrid
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, CartesianGrid
 } from "recharts"
-import { Users, Briefcase, AlertTriangle, TrendingUp } from "lucide-react"
+import { Users, Briefcase, AlertCircle, LucideIcon, RefreshCw } from "lucide-react"
 
 /* ================= TYPES ================= */
+interface ChartData {
+  month: string;
+  jobs: number;
+}
 
-type Stats = { users: number; jobs: number; complaints: number }
-type JobsData = { month: string; jobs: number }
-type UsersData = { month: string; users: number }
-type PieData = { name: string; value: number }
+interface JobStatus {
+  approved: number;
+  pending: number;
+  rejected: number;
+}
 
-const COLORS = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"];
-
-/* ================= PAGE ================= */
+/* ================= THEME ================= */
+const COLORS = ["#10b981", "#f59e0b", "#ef4444"]; // Green, Amber, Rose
 
 export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState<Stats>({ users: 0, jobs: 0, complaints: 0 })
-  const [jobsData, setJobsData] = useState<JobsData[]>([])
-  const [usersData, setUsersData] = useState<UsersData[]>([])
-  const [statusData, setStatusData] = useState<PieData[]>([])
-  const [categoryData, setCategoryData] = useState<PieData[]>([])
+  const [stats, setStats] = useState({ users: 0, jobs: 0, complaints: 0 })
+  
+  // States for chart data
+  const [jobsData, setJobsData] = useState<ChartData[]>([]);
+  const [statusData, setStatusData] = useState<{name: string, value: number}[]>([]);
+  // Note: usersData and categoryData are fetched but currently unused in your JSX
+  const [usersData, setUsersData] = useState<any[]>([])
+  const [categoryData, setCategoryData] = useState<any[]>([])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const [users, jobs, complaints, jobsOT, userG, jobS, cats] = await Promise.all([
-        getTotalUsers(),
-        getTotalJobs(),
+      const [u, j, c, jobsOT, userG, jobS, cats] = await Promise.all([
+        getTotalUsers(), 
+        getTotalJobs(), 
         getTotalComplaints(),
-        getJobsOverTime(),
-        getUserGrowth(),
-        getJobStatusStats(),
+        getJobsOverTime(), 
+        getUserGrowth(), 
+        getJobStatusStats(), 
         getTopCategories()
       ])
 
-      setStats({ users, jobs, complaints })
-      setJobsData(jobsOT)
-      setUsersData(userG)
+      setStats({ users: u || 0, jobs: j || 0, complaints: c || 0 })
+      setJobsData(jobsOT || [])
+      setUsersData(userG || [])
+      setCategoryData(cats || [])
+      
       setStatusData([
-        { name: "Approved", value: jobS.approved },
-        { name: "Pending", value: jobS.pending },
-        { name: "Rejected", value: jobS.rejected }
+        { name: "Approved", value: jobS?.approved || 0 },
+        { name: "Pending", value: jobS?.pending || 0 },
+        { name: "Rejected", value: jobS?.rejected || 0 }
       ])
-      setCategoryData(cats)
     } catch (err) {
-      console.error("Analytics error:", err)
+      console.error("Analytics fetch error:", err)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => { 
+    fetchData() 
+  }, [fetchData])
 
-  if (loading) return <LoadingSkeleton />
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-slate-950">
+        <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin mb-4" />
+        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Syncing Data...</p>
+      </div>
+    )
+  }
 
   return (
-    <div className="p-8 space-y-8 bg-[#f8f9fb] dark:bg-slate-950 min-h-screen">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Analytics Overview</h1>
-        <p className="text-slate-500 mt-1">Deep dive into platform growth and job metrics.</p>
+    <div className="min-h-screen bg-white dark:bg-slate-950 p-6 lg:p-12 text-slate-900 dark:text-slate-100">
+      
+      {/* HEADER */}
+      <header className="mb-12 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div>
+          <span className="text-indigo-600 font-bold text-[10px] uppercase tracking-[0.3em]">System Insights</span>
+          <h1 className="text-3xl font-semibold tracking-tight mt-1">Analytics Dashboard</h1>
+        </div>
+        <button 
+          onClick={fetchData}
+          className="text-[10px] font-bold uppercase tracking-wider bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 px-4 py-2 rounded-full border border-slate-100 dark:border-slate-800 transition-all active:scale-95"
+        >
+          Refresh Stats
+        </button>
+      </header>
+
+      {/* STATS SECTION */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <StatCard title="Total Users" value={stats.users} icon={Users} trend="+12%" />
+        <StatCard title="Active Jobs" value={stats.jobs} icon={Briefcase} trend="+5.4%" />
+        <StatCard title="Reports/Issues" value={stats.complaints} icon={AlertCircle} trend="-2%" isWarning />
       </div>
 
-      {/* STATS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Total Users" value={stats.users} icon={<Users className="text-blue-500" />} trend="+12%" />
-        <StatCard title="Total Jobs" value={stats.jobs} icon={<Briefcase className="text-indigo-500" />} trend="+5.4%" />
-        <StatCard title="Complaints" value={stats.complaints} icon={<AlertTriangle className="text-amber-500" />} trend="-2%" color="text-rose-500" />
-      </div>
-
-      {/* TREND CHARTS */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <ChartCard title="Job Posting Trend" subtitle="Monthly jobs submitted">
+      {/* CHARTS SECTION */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        
+        {/* GROWTH CHART */}
+        <ChartWrapper title="Growth Metrics" description="Monthly job post analysis">
           <AreaChart data={jobsData}>
             <defs>
-              <linearGradient id="colorJobs" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
-                <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#6366f1" stopOpacity={0.2} />
+                <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
-            <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-            <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
-            <Area type="monotone" dataKey="jobs" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorJobs)" />
+            <CartesianGrid vertical={false} stroke="#f1f5f9" strokeDasharray="3" />
+            <XAxis 
+              dataKey="month" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 600}} 
+              dy={10} 
+            />
+            <YAxis hide />
+            <Tooltip content={<CustomTooltip />} cursor={{stroke: '#6366f1', strokeWidth: 1}} />
+            <Area 
+              type="monotone" 
+              dataKey="jobs" 
+              stroke="#6366f1" 
+              strokeWidth={3} 
+              fill="url(#chartGradient)" 
+              animationDuration={1500}
+            />
           </AreaChart>
-        </ChartCard>
+        </ChartWrapper>
 
-        <ChartCard title="User Growth" subtitle="New platform registrations">
-          <AreaChart data={usersData}>
-             <defs>
-              <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.1}/>
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
-            <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-            <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
-            <Area type="monotone" dataKey="users" stroke="#22c55e" strokeWidth={3} fillOpacity={1} fill="url(#colorUsers)" />
-          </AreaChart>
-        </ChartCard>
-      </div>
+        {/* PIE CHART */}
+        <ChartWrapper title="Job Health" description="Verification breakdown">
+          <div className="flex flex-col sm:flex-row items-center h-full">
+            <div className="w-full sm:w-1/2 h-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie 
+                    data={statusData} 
+                    innerRadius={60} 
+                    outerRadius={85} 
+                    paddingAngle={8} 
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {statusData.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="w-full sm:w-1/2 flex flex-col justify-center gap-4 px-6">
+              {statusData.map((item, i) => (
+                <div key={i} className="flex justify-between items-end border-b border-slate-50 dark:border-slate-800 pb-1">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">{item.name}</span>
+                  </div>
+                  <span className="text-sm font-bold">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </ChartWrapper>
 
-      {/* DISTRIBUTION CHARTS */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <ChartCard title="Job Status Distribution" subtitle="Approval vs Rejection ratio">
-          <PieChart>
-            <Pie data={statusData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100} paddingAngle={5}>
-              {statusData.map((_, i) => <Cell key={i} fill={["#22c55e", "#f59e0b", "#ef4444"][i]} />)}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ChartCard>
-
-        <ChartCard title="Top Job Categories" subtitle="Based on total postings">
-          <PieChart>
-            <Pie data={categoryData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100} paddingAngle={2}>
-              {categoryData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ChartCard>
       </div>
     </div>
   )
 }
 
-/* ================= COMPONENTS ================= */
+/* ================= ATOMS ================= */
 
-function StatCard({ title, value, icon, trend, color }: any) {
+function StatCard({ title, value, icon: Icon, trend, isWarning }: { title: string, value: number, icon: LucideIcon, trend: string, isWarning?: boolean }) {
   return (
-    <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-slate-200/60 dark:border-slate-800">
-      <div className="flex justify-between items-start mb-4">
-        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800">{icon}</div>
-        <span className="text-xs font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-lg flex items-center gap-1">
-          <TrendingUp size={12} /> {trend}
+    <div className="group p-8 rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/50 transition-all hover:border-indigo-100 shadow-sm hover:shadow-md">
+      <div className="flex justify-between items-start mb-6">
+        <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:text-indigo-600 transition-colors">
+          <Icon size={20} />
+        </div>
+        <span className={`text-[10px] font-black px-2 py-1 rounded-lg ${isWarning ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
+          {trend}
         </span>
       </div>
-      <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">{title}</p>
-      <h2 className={`text-3xl font-bold mt-1 ${color || "text-slate-900 dark:text-white"}`}>{value}</h2>
+      <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{title}</h3>
+      <p className="text-4xl font-semibold mt-1 tracking-tighter">{value.toLocaleString()}</p>
     </div>
   )
 }
 
-function ChartCard({ title, subtitle, children }: any) {
+function ChartWrapper({ title, description, children }: { title: string, description: string, children: React.ReactNode }) {
   return (
-    <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
-      <div className="mb-6">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h2>
-        <p className="text-sm text-slate-400">{subtitle}</p>
+    <div className="flex flex-col gap-6">
+      <div className="px-2">
+        <h3 className="text-sm font-bold tracking-tight">{title}</h3>
+        <p className="text-xs text-slate-400">{description}</p>
       </div>
-      <div className="h-[300px] w-full">
-        <ResponsiveContainer width="100%" height="100%">{children}</ResponsiveContainer>
+      <div className="h-[320px] w-full bg-slate-50/40 dark:bg-slate-900/20 rounded-[2.5rem] p-8 border border-slate-50/50 dark:border-slate-800/50">
+        <ResponsiveContainer width="100%" height="100%">{children as React.ReactElement}</ResponsiveContainer>
       </div>
     </div>
   )
 }
 
-function LoadingSkeleton() {
-  return (
-    <div className="p-8 space-y-8 animate-pulse">
-      <div className="h-10 w-48 bg-slate-200 rounded-lg" />
-      <div className="grid grid-cols-3 gap-6"><div className="h-32 bg-slate-200 rounded-2xl" /><div className="h-32 bg-slate-200 rounded-2xl" /><div className="h-32 bg-slate-200 rounded-2xl" /></div>
-      <div className="grid grid-cols-2 gap-8"><div className="h-80 bg-slate-200 rounded-3xl" /><div className="h-80 bg-slate-200 rounded-3xl" /></div>
-    </div>
-  )
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-slate-900 text-white px-3 py-1.5 rounded-lg shadow-2xl text-[11px] font-bold border border-slate-700">
+        {payload[0].value} Entries
+      </div>
+    )
+  }
+  return null
 }

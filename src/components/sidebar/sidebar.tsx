@@ -61,26 +61,26 @@ export default function Sidebar() {
     {
       title: "Users",
       items: [
-        { label: "Workers", icon: Users, path: "/admin/dashboard" },
-        { label: "Recruiters", icon: UserCheck, path: "/admin/dashboard" },
-        { label: "Admins", icon: Shield, path: "/admin/dashboard" },
-        { label: "Blocked Users", icon: UserX, path: "/admin/dashboard" },
+        { label: "Workers", icon: Users, path: "/" },
+        { label: "Recruiters", icon: UserCheck, path: "/" },
+        { label: "Admins", icon: Shield, path: "/" },
+        { label: "Blocked Users", icon: UserX, path: "/" },
       ],
     },
 
     {
       title: "Jobs",
       items: [
-        { label: "All Jobs", icon: Briefcase, path: "/admin/dashboard" },
+        { label: "All Jobs", icon: Briefcase, path: "/" },
         {
           label: "Pending Approvals",
           icon: Clock,
-          path: "/admin/dashboard",
+          path: "/",
         },
         {
           label: "Reported Jobs",
           icon: AlertTriangle,
-          path: "/admin/dashboard",
+          path: "/",
         },
       ],
     },
@@ -88,9 +88,9 @@ export default function Sidebar() {
     {
       title: "Recruitment",
       items: [
-        { label: "Applications", icon: FileText, path: "/admin/dashboard" },
-        { label: "Hired Candidates", icon: UserCheck, path: "/admin/dashboard" },
-        { label: "Rejected Candidates", icon: UserX, path: "/admin/dashboard" },
+        { label: "Applications", icon: FileText, path: "/" },
+        { label: "Hired Candidates", icon: UserCheck, path: "/" },
+        { label: "Rejected Candidates", icon: UserX, path: "/" },
       ],
     },
 
@@ -100,13 +100,13 @@ export default function Sidebar() {
         {
           label: "Transactions",
           icon: CreditCard,
-          path: "/admin/dashboard",
+          path: "/",
         },
-        { label: "Invoices", icon: Receipt, path: "/admin/dashboard" },
+        { label: "Invoices", icon: Receipt, path: "/" },
         {
           label: "Revenue Analytics",
           icon: TrendingUp,
-          path: "/admin/dashboard",
+          path: "/",
         },
       ],
     },
@@ -117,22 +117,22 @@ export default function Sidebar() {
         {
           label: "Complaints",
           icon: MessageCircleWarning,
-          path: "/admin/dashboard",
+          path: "/",
         },
-        { label: "Reports", icon: Flag, path: "/admin/dashboard" },
+        { label: "Reports", icon: Flag, path: "/" },
       ],
     },
 
     {
       title: "Content",
       items: [
-        { label: "CMS", icon: FileEdit, path: "/admin/dashboard" },
+        { label: "CMS", icon: FileEdit, path: "/" },
         {
           label: "Announcements",
           icon: Megaphone,
-          path: "/admin/announcements",
+          path: "s",
         },
-        { label: "FAQ", icon: HelpCircle, path: "/admin/dashboard" },
+        { label: "FAQ", icon: HelpCircle, path: "/" },
       ],
     },
 
@@ -142,18 +142,18 @@ export default function Sidebar() {
         {
           label: "System Monitoring",
           icon: Activity,
-          path: "/admin/dashboard",
+          path: "/",
         },
-        { label: "Backups", icon: DatabaseBackup, path: "/admin/dashboard" },
+        { label: "Backups", icon: DatabaseBackup, path: "/" },
       ],
     },
 
     {
       title: "Settings",
       items: [
-        { label: "Admin Roles", icon: ShieldCheck, path: "/admin/dashboard" },
-        { label: "Security", icon: Lock, path: "/admin/dashboard" },
-        { label: "Platform Settings", icon: Settings, path: "/admin/dashboard" },
+        { label: "Admin Roles", icon: ShieldCheck, path: "/" },
+        { label: "Security", icon: Lock, path: "/" },
+        { label: "Platform Settings", icon: Settings, path: "/" },
       ],
     },
   ];
