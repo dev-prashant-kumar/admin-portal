@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, ReactNode, ReactElement } from "react"
 import {
   getTotalUsers,
   getTotalJobs,
@@ -18,9 +18,20 @@ import {
 import { Users, Briefcase, AlertCircle, LucideIcon, RefreshCw } from "lucide-react"
 
 /* ================= TYPES ================= */
-interface ChartData {
+
+interface JobChartData {
   month: string;
   jobs: number;
+}
+
+interface UserGrowthData {
+  month: string;
+  users: number;
+}
+
+interface CategoryData {
+  name: string;
+  value: number; 
 }
 
 interface JobStatus {
@@ -29,19 +40,33 @@ interface JobStatus {
   rejected: number;
 }
 
+interface StatusChartItem {
+  name: string;
+  value: number;
+}
+
+// FIXED: Explicitly define the Tooltip payload structure to satisfy TypeScript
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    value: number | string;
+    name: string;
+    payload: unknown;
+  }>;
+  label?: string;
+}
+
 /* ================= THEME ================= */
-const COLORS = ["#10b981", "#f59e0b", "#ef4444"]; // Green, Amber, Rose
+const COLORS = ["#10b981", "#f59e0b", "#ef4444"];
 
 export default function AnalyticsPage() {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState<boolean>(true)
   const [stats, setStats] = useState({ users: 0, jobs: 0, complaints: 0 })
   
-  // States for chart data
-  const [jobsData, setJobsData] = useState<ChartData[]>([]);
-  const [statusData, setStatusData] = useState<{name: string, value: number}[]>([]);
-  // Note: usersData and categoryData are fetched but currently unused in your JSX
-  const [usersData, setUsersData] = useState<any[]>([])
-  const [categoryData, setCategoryData] = useState<any[]>([])
+  const [jobsData, setJobsData] = useState<JobChartData[]>([]);
+  const [usersData, setUsersData] = useState<UserGrowthData[]>([])
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([])
+  const [statusData, setStatusData] = useState<StatusChartItem[]>([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -56,15 +81,21 @@ export default function AnalyticsPage() {
         getTopCategories()
       ])
 
-      setStats({ users: u || 0, jobs: j || 0, complaints: c || 0 })
-      setJobsData(jobsOT || [])
-      setUsersData(userG || [])
-      setCategoryData(cats || [])
+      setStats({ 
+        users: (u as number) || 0, 
+        jobs: (j as number) || 0, 
+        complaints: (c as number) || 0 
+      })
       
+      setJobsData((jobsOT as JobChartData[]) || [])
+      setUsersData((userG as UserGrowthData[]) || [])
+      setCategoryData((cats as CategoryData[]) || [])
+      
+      const status = jobS as JobStatus;
       setStatusData([
-        { name: "Approved", value: jobS?.approved || 0 },
-        { name: "Pending", value: jobS?.pending || 0 },
-        { name: "Rejected", value: jobS?.rejected || 0 }
+        { name: "Approved", value: status?.approved || 0 },
+        { name: "Pending", value: status?.pending || 0 },
+        { name: "Rejected", value: status?.rejected || 0 }
       ])
     } catch (err) {
       console.error("Analytics fetch error:", err)
@@ -96,7 +127,7 @@ export default function AnalyticsPage() {
           <h1 className="text-3xl font-semibold tracking-tight mt-1">Analytics Dashboard</h1>
         </div>
         <button 
-          onClick={fetchData}
+          onClick={() => fetchData()}
           className="text-[10px] font-bold uppercase tracking-wider bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 px-4 py-2 rounded-full border border-slate-100 dark:border-slate-800 transition-all active:scale-95"
         >
           Refresh Stats
@@ -114,11 +145,11 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         
         {/* GROWTH CHART */}
-        <ChartWrapper title="Growth Metrics" description="Monthly job post analysis">
+        <ChartWrapper title="Growth Metrics" description="Monthly trend analysis">
           <AreaChart data={jobsData}>
             <defs>
               <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#6366f1" stopOpacity={0.2} />
+                <stop offset="0%" stopColor="#6366f1" stopOpacity={0.1} />
                 <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
               </linearGradient>
             </defs>
@@ -132,14 +163,7 @@ export default function AnalyticsPage() {
             />
             <YAxis hide />
             <Tooltip content={<CustomTooltip />} cursor={{stroke: '#6366f1', strokeWidth: 1}} />
-            <Area 
-              type="monotone" 
-              dataKey="jobs" 
-              stroke="#6366f1" 
-              strokeWidth={3} 
-              fill="url(#chartGradient)" 
-              animationDuration={1500}
-            />
+            <Area type="monotone" dataKey="jobs" stroke="#6366f1" strokeWidth={2} fill="url(#chartGradient)" />
           </AreaChart>
         </ChartWrapper>
 
@@ -153,7 +177,7 @@ export default function AnalyticsPage() {
                     data={statusData} 
                     innerRadius={60} 
                     outerRadius={85} 
-                    paddingAngle={8} 
+                    paddingAngle={10} 
                     dataKey="value"
                     stroke="none"
                   >
@@ -168,10 +192,7 @@ export default function AnalyticsPage() {
             <div className="w-full sm:w-1/2 flex flex-col justify-center gap-4 px-6">
               {statusData.map((item, i) => (
                 <div key={i} className="flex justify-between items-end border-b border-slate-50 dark:border-slate-800 pb-1">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">{item.name}</span>
-                  </div>
+                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">{item.name}</span>
                   <span className="text-sm font-bold">{item.value}</span>
                 </div>
               ))}
@@ -188,7 +209,7 @@ export default function AnalyticsPage() {
 
 function StatCard({ title, value, icon: Icon, trend, isWarning }: { title: string, value: number, icon: LucideIcon, trend: string, isWarning?: boolean }) {
   return (
-    <div className="group p-8 rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/50 transition-all hover:border-indigo-100 shadow-sm hover:shadow-md">
+    <div className="group p-8 rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/50 transition-all hover:border-indigo-100">
       <div className="flex justify-between items-start mb-6">
         <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:text-indigo-600 transition-colors">
           <Icon size={20} />
@@ -203,7 +224,7 @@ function StatCard({ title, value, icon: Icon, trend, isWarning }: { title: strin
   )
 }
 
-function ChartWrapper({ title, description, children }: { title: string, description: string, children: React.ReactNode }) {
+function ChartWrapper({ title, description, children }: { title: string, description: string, children: ReactNode }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="px-2">
@@ -211,16 +232,19 @@ function ChartWrapper({ title, description, children }: { title: string, descrip
         <p className="text-xs text-slate-400">{description}</p>
       </div>
       <div className="h-[320px] w-full bg-slate-50/40 dark:bg-slate-900/20 rounded-[2.5rem] p-8 border border-slate-50/50 dark:border-slate-800/50">
-        <ResponsiveContainer width="100%" height="100%">{children as React.ReactElement}</ResponsiveContainer>
+        <ResponsiveContainer width="100%" height="100%">
+          {children as ReactElement}
+        </ResponsiveContainer>
       </div>
     </div>
   )
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+// FIXED: Using CustomTooltipProps avoids the internal library conflict
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-slate-900 text-white px-3 py-1.5 rounded-lg shadow-2xl text-[11px] font-bold border border-slate-700">
+      <div className="bg-slate-900 text-white px-3 py-1.5 rounded-lg shadow-2xl text-[11px] font-bold">
         {payload[0].value} Entries
       </div>
     )
