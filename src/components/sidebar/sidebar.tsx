@@ -61,26 +61,26 @@ export default function Sidebar() {
     {
       title: "Users",
       items: [
-        { label: "Workers", icon: Users, path: "/admin/workers" },
-        { label: "Recruiters", icon: UserCheck, path: "/admin/recruiters" },
-        { label: "Admins", icon: Shield, path: "/admin/admins" },
-        { label: "Blocked Users", icon: UserX, path: "/admin/blocked-users" },
+        { label: "Workers", icon: Users, path: "/admin/dashboard" },
+        { label: "Recruiters", icon: UserCheck, path: "/admin/dashboard" },
+        { label: "Admins", icon: Shield, path: "/admin/dashboard" },
+        { label: "Blocked Users", icon: UserX, path: "/admin/dashboard" },
       ],
     },
 
     {
       title: "Jobs",
       items: [
-        { label: "All Jobs", icon: Briefcase, path: "/admin/jobs" },
+        { label: "All Jobs", icon: Briefcase, path: "/admin/dashboard" },
         {
           label: "Pending Approvals",
           icon: Clock,
-          path: "/admin/jobs/pending",
+          path: "/admin/dashboard",
         },
         {
           label: "Reported Jobs",
           icon: AlertTriangle,
-          path: "/admin/jobs/reported",
+          path: "/admin/dashboard",
         },
       ],
     },
@@ -88,9 +88,9 @@ export default function Sidebar() {
     {
       title: "Recruitment",
       items: [
-        { label: "Applications", icon: FileText, path: "/admin/applications" },
-        { label: "Hired Candidates", icon: UserCheck, path: "/admin/hired" },
-        { label: "Rejected Candidates", icon: UserX, path: "/admin/rejected" },
+        { label: "Applications", icon: FileText, path: "/admin/dashboard" },
+        { label: "Hired Candidates", icon: UserCheck, path: "/admin/dashboard" },
+        { label: "Rejected Candidates", icon: UserX, path: "/admin/dashboard" },
       ],
     },
 
@@ -100,13 +100,13 @@ export default function Sidebar() {
         {
           label: "Transactions",
           icon: CreditCard,
-          path: "/admin/transactions",
+          path: "/admin/dashboard",
         },
-        { label: "Invoices", icon: Receipt, path: "/admin/invoices" },
+        { label: "Invoices", icon: Receipt, path: "/admin/dashboard" },
         {
           label: "Revenue Analytics",
           icon: TrendingUp,
-          path: "/admin/revenue",
+          path: "/admin/dashboard",
         },
       ],
     },
@@ -117,22 +117,22 @@ export default function Sidebar() {
         {
           label: "Complaints",
           icon: MessageCircleWarning,
-          path: "/admin/complaints",
+          path: "/admin/dashboard",
         },
-        { label: "Reports", icon: Flag, path: "/admin/reports" },
+        { label: "Reports", icon: Flag, path: "/admin/dashboard" },
       ],
     },
 
     {
       title: "Content",
       items: [
-        { label: "CMS", icon: FileEdit, path: "/admin/cms" },
+        { label: "CMS", icon: FileEdit, path: "/admin/dashboard" },
         {
           label: "Announcements",
           icon: Megaphone,
           path: "/admin/announcements",
         },
-        { label: "FAQ", icon: HelpCircle, path: "/admin/faq" },
+        { label: "FAQ", icon: HelpCircle, path: "/admin/dashboard" },
       ],
     },
 
@@ -142,18 +142,18 @@ export default function Sidebar() {
         {
           label: "System Monitoring",
           icon: Activity,
-          path: "/admin/monitoring",
+          path: "/admin/dashboard",
         },
-        { label: "Backups", icon: DatabaseBackup, path: "/admin/backups" },
+        { label: "Backups", icon: DatabaseBackup, path: "/admin/dashboard" },
       ],
     },
 
     {
       title: "Settings",
       items: [
-        { label: "Admin Roles", icon: ShieldCheck, path: "/admin/roles" },
-        { label: "Security", icon: Lock, path: "/admin/security" },
-        { label: "Platform Settings", icon: Settings, path: "/admin/settings" },
+        { label: "Admin Roles", icon: ShieldCheck, path: "/admin/dashboard" },
+        { label: "Security", icon: Lock, path: "/admin/dashboard" },
+        { label: "Platform Settings", icon: Settings, path: "/admin/dashboard" },
       ],
     },
   ];
@@ -191,7 +191,7 @@ export default function Sidebar() {
         bg-white dark:bg-slate-950
         border-r border-slate-200 dark:border-slate-800
         transition-all duration-300
-        ${collapsed ? "w-[85px]" : "w-[260px]"}
+        ${collapsed ? "w-21.25" : "w-65"}
         ${mobileOpen ? "left-0" : "-left-full lg:left-0"}`}
       >
         {/* COLLAPSE BUTTON */}

@@ -45,46 +45,52 @@ export async function deleteJob(id: string) {
     .eq("id", id)
 }
 
-type JobRow = {
-  created_at: string
-}
-
-type JobChartData = {
-  month: string
-  jobs: number
-}
-
-export async function getJobsPostedOverTime(): Promise<JobChartData[]> {
-
-  const { data, error } = await supabase
-    .from("job_moderation")
-    .select("created_at")
-
-  if (error) {
-    console.error(error)
-    return []
-  }
-
-  const jobsData = (data || []) as JobRow[]
-
-  const grouped: Record<string, number> = {}
-
-  jobsData.forEach((job) => {
-    const date = new Date(job.created_at)
-    const month = date.toLocaleString("default", { month: "short" })
-
-    grouped[month] = (grouped[month] || 0) + 1
-  })
-
-  return Object.entries(grouped).map(([month, jobs]) => ({
-    month,
-    jobs
-  }))
-}
-
-export async function getRejectedJobsCount() {
-  return supabase
+/* GET REJECTED JOBS COUNT */
+export async function getRejectedJobsCount(): Promise<number> {
+  const { count } = await supabase
     .from("job_moderation")
     .select("*", { count: "exact", head: true })
-    .eq("status", "rejected")
+    .eq("status", "rejected");
+  
+  return count ?? 0; // Return just the number
+}
+
+// 1. Define the shape of a single row from your database
+interface JobModerationRow {
+  created_at: string;
+  // add other fields if you use them, e.g., id: string; status: string;
+}
+
+// 2. Define the shape of the data for your chart
+export type JobChartData = {
+  month: string;
+  jobs: number;
+};
+
+export async function getJobsPostedOverTime(): Promise<JobChartData[]> {
+  const { data, error } = await supabase
+    .from("job_moderation")
+    .select("created_at");
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  // 3. Cast the data to your interface to remove the 'any' error
+  const jobsData = (data as JobModerationRow[]) || [];
+
+  const monthsOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const grouped: Record<string, number> = {};
+
+  // Now 'job' is typed as JobModerationRow instead of 'any'
+  jobsData.forEach((job) => {
+    const date = new Date(job.created_at);
+    const month = date.toLocaleString("default", { month: "short" });
+    grouped[month] = (grouped[month] || 0) + 1;
+  });
+
+  return Object.entries(grouped)
+    .map(([month, jobs]) => ({ month, jobs }))
+    .sort((a, b) => monthsOrder.indexOf(a.month) - monthsOrder.indexOf(b.month));
 }

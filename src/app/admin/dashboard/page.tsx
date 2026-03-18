@@ -1,9 +1,9 @@
 "use client"
 import { useAuth } from "@/context/AuthContext";
 import QuickStats from "./quickStats";
-import RevenueChart from "./revenueChart";
-import SprintProgress from "./sprintProgress";
-import TeamActivity from "./teamActivity";
+import TeamActivity from "./systemActivity";
+import JobsChart from "./jobChart";
+import JobStatusCard from "./jobProgress";
 
 export default function DashboardPage() {
   const { admin } = useAuth();
@@ -30,11 +30,11 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-3 gap-6">
 
         <div className="lg:col-span-2">
-          <RevenueChart />
+          <JobsChart />
         </div>
 
         <div className="space-y-6">
-          <SprintProgress />
+          <JobStatusCard />
           <TeamActivity />
         </div>
 
