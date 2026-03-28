@@ -18,6 +18,7 @@ type Admin = {
     role_name: string   // ✅ FIXED
     description: string
   } | null
+  new_password?: string
 }
 
 export default function AdminUsersPage() {
