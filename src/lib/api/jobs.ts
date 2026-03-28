@@ -38,12 +38,15 @@ export async function rejectJob(id: string) {
 }
 
 /* DELETE JOB */
-export async function deleteJob(id: string) {
-  return await supabase
+export async function deleteJob(id: number) {
+  const { error } = await supabase
     .from("jobs")
     .delete()
     .eq("id", id)
+
+  if (error) throw error
 }
+
 export async function markFakeJob(id: number, value: boolean) {
   const { error } = await supabase
     .from("jobs")
