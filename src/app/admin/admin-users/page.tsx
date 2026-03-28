@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getAdmins, updateAdmin, deleteAdmin } from "@/lib/api/users";
-import { Search, Edit2, Trash2, Mail, X, CheckCircle2 } from "lucide-react";
+import { Edit2, Trash2, Mail, X, } from "lucide-react";
 
 type Admin = {
   id: string
@@ -95,24 +95,43 @@ export default function AdminUsersPage() {
     <div className="min-h-screen p-6 bg-slate-50 dark:bg-[#0a0f1f]">
       <div className="max-w-6xl mx-auto">
         {/* HEADER */}
-        <div className="flex justify-between mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-            Admin Users
-          </h1>
-
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 size-4 text-gray-400" />
+        <div className="flex flex-col md:flex-row justify-between mb-10 gap-4">
+          <div>
+            <h1 className="text-3xl font-black bg-gradient-to-r from-indigo-700 to-cyan-500 bg-clip-text text-transparent">
+              Admins
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              See Admins in your system
+            </p>
+          </div>
+          <div className="relative w-full md:w-72 group">
+            {/* Input */}
             <input
-              className="pl-8 pr-3 py-2 border rounded-lg text-sm"
-              placeholder="Search..."
+              type="text"
+              placeholder="Search admins..."
+              className="w-full pl-10 pr-4 py-2 rounded-xl text-sm
+    
+    bg-white dark:bg-[#111827]
+    
+    border border-slate-300 dark:border-slate-700
+    text-slate-900 dark:text-slate-200
+    
+    placeholder:text-slate-400 dark:placeholder:text-slate-500
+    
+    outline-none 
+    focus:ring-2 focus:ring-indigo-500/40 
+    focus:border-indigo-500
+    
+    transition-all duration-200"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
         </div>
 
+
         {/* TABLE */}
-        <div className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden">
+        <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl">
           <table className="w-full text-sm">
             <thead className="bg-slate-100 dark:bg-white/5">
               <tr>

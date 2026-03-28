@@ -7,7 +7,7 @@ import {
   deleteRecruiter,
 } from "@/lib/api/users";
 
-import { Search, Edit2, Trash2, Phone, X, CheckCircle2 } from "lucide-react";
+import { Edit2, Trash2, Phone, X, CheckCircle2 } from "lucide-react";
 
 type Recruiter = {
   id: number;
@@ -113,7 +113,7 @@ export default function RecruitersPage() {
           <div className="relative w-full md:w-72 group">
             <input
               type="text"
-              placeholder="Search workers..."
+              placeholder="Search recruiters..."
               className="w-full pl-10 pr-4 py-2 rounded-xl text-sm
     
     bg-white dark:bg-[#111827]

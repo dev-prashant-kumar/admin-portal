@@ -4,17 +4,12 @@ import { useEffect, useState, cloneElement } from "react";
 import { getWorkers, updateWorker, deleteWorker } from "@/lib/api/users";
 
 import {
-  Search,
   Edit2,
   Trash2,
   Mail,
   Phone,
   X,
   CheckCircle2,
-  Users,
-  Activity,
-  Calendar,
-  Clock,
 } from "lucide-react";
 
 type Worker = {

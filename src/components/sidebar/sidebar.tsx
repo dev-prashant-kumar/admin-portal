@@ -16,6 +16,7 @@ import {
   FileText,
   Menu,
   ChevronLeft,
+  MessageCircleWarning,
 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
@@ -71,6 +72,16 @@ export default function Sidebar() {
         { label: "jobs", icon: FileText, path: "/admin/export-jobs" },
         { label: "Candidates", icon: UserCheck, path: "/admin/export-workers" },
         { label: "Recruiters", icon: Users, path: "/admin/export-recruiters" },
+      ],
+    },
+     {
+      title: "Support",
+      items: [
+        {
+          label: "Complaints",
+          icon: MessageCircleWarning,
+          path: "/admin/complaints",
+        },
       ],
     },
   ];

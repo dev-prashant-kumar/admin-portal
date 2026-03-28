@@ -64,7 +64,7 @@ export default function ExportJobsPage() {
       <div className="max-w-xl mx-auto text-center">
 
         {/* HEADER */}
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-black bg-gradient-to-r from-indigo-700 to-cyan-500 bg-clip-text text-transparent">
           Export Jobs Data
         </h1>
         <p className="text-sm text-slate-500 mb-8">

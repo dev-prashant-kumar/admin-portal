@@ -1,67 +1,87 @@
-import { supabase } from "../supabaseClient"
+import { supabase } from "@/lib/supabaseClient"
+
+/* TYPES */
 
 export type Activity = {
   id: string
-  activity_type: string
-  description: string
-  user_name: string
+  activity_type: "job" | "user" | "complaint"
+  description: string | null
   created_at: string
 }
 
 export type ActivitySummary = {
-  todayCount: number
-  activeMembers: number
-  pendingJobs: number
-  releases: number
+  total: number
+  jobs: number
+  users: number
+  complaints: number
 }
 
-/* GET RECENT ACTIVITY (Limit 3) */
-export async function getRecentActivity(): Promise<Activity[]> {
-  const { data, error } = await supabase
-    .from("system_activity")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(3)
+/* 🔥 GET ALL ACTIVITY */
 
-  if (error) {
-    console.error("Error fetching recent activity:", error)
-    return []
-  }
-
-  return (data as Activity[]) || []
-}
-
-/* GET ALL ACTIVITY WITH FILTER */
-export async function getAllActivity(filter: string): Promise<Activity[]> {
+export async function getAllActivity(filter: string) {
   let query = supabase
     .from("system_activity")
     .select("*")
     .order("created_at", { ascending: false })
 
-  if (filter !== "all") {
-    query = query.ilike("activity_type", `%${filter}%`)
-  }
+  // 🎯 FILTER
+  if (filter === "jobs") query = query.eq("activity_type", "job_approved")
+  if (filter === "users") query = query.eq("activity_type", "user_signup")
+  if (filter === "complaints") query = query.eq("activity_type", "report_created")
 
   const { data, error } = await query
-  if (error) return []
-  return (data as Activity[]) || []
+
+  if (error) {
+    console.error(error)
+    return []
+  }
+
+  return data as Activity[]
 }
 
-export async function getActivitySummary(): Promise<ActivitySummary> {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+/* 🔥 SUMMARY */
 
-  const [todayRes, membersRes, pendingRes, releasesRes] = await Promise.all([
-    supabase.from("system_activity").select("*", { count: "exact", head: true }).gte("created_at", today.toISOString()),
-    supabase.from("system_activity").select("user_name", { count: "exact", head: true }).neq("user_name", "System"),
-    supabase.from("job_moderation").select("*", { count: "exact", head: true }).eq("status", "pending"),
-    supabase.from("system_activity").select("*", { count: "exact", head: true }).eq("activity_type", "report_created")
-  ])
+export async function getActivitySummary(): Promise<ActivitySummary> {
+  const { data, error } = await supabase
+    .from("system_activity")
+    .select("activity_type")
+
+  if (error || !data) {
+    return { total: 0, jobs: 0, users: 0, complaints: 0 }
+  }
 
   return {
-    todayCount: todayRes.count || 0,
-    activeMembers: membersRes.count || 0,
-    pendingJobs: pendingRes.count || 0,
-    releases: releasesRes.count || 0
+    total: data.length,
+    jobs: data.filter(d => d.activity_type === "job").length,
+    users: data.filter(d => d.activity_type === "user").length,
+    complaints: data.filter(d => d.activity_type === "complaint").length
   }
+}
+
+/* 🔥 INSERT ACTIVITY (IMPORTANT) */
+
+export async function addActivity(type: "job" | "user" | "complaint", description: string) {
+  const { error } = await supabase
+    .from("system_activity")
+    .insert({
+      activity_type: type,
+      description
+    })
+
+  if (error) throw error
+}
+
+export async function getRecentActivity() {
+  const { data, error } = await supabase
+    .from("system_activity")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(5)
+
+  if (error) {
+    console.error(error)
+    return []
+  }
+
+  return data
 }

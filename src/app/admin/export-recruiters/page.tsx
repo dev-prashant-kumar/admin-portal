@@ -46,9 +46,12 @@ export default function ExportRecruitersPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1f] p-6">
       <div className="max-w-xl mx-auto text-center">
 
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          Export Recruiters
+        <h1 className="text-3xl font-black bg-gradient-to-r from-indigo-700 to-cyan-500 bg-clip-text text-transparent">
+          Export Recruiters Data
         </h1>
+        <p className="text-sm text-slate-500 mb-8">
+          Download Data 
+        </p>
 
         <div className="bg-white dark:bg-white/5 p-8 rounded-2xl border border-slate-200 dark:border-white/10 shadow-xl">
 

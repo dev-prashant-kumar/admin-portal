@@ -1,19 +1,25 @@
 import { supabase } from "@/lib/supabaseClient"
 
-/* GET ALL COMPLAINTS */
+// ✅ Get complaints
 export async function getComplaints() {
-  const { data } = await supabase
-    .from("complaints")
-    .select("*")
+  const { data, error } = await supabase
+    .from("complaints_management")
+    .select(`
+      *,
+      admin:handled_by ( id, name )
+    `)
     .order("created_at", { ascending: false })
 
-  return data || []
+  if (error) throw error
+  return data
 }
 
-/* RESOLVE COMPLAINT */
-export async function resolveComplaint(id: string) {
-  return await supabase
-    .from("complaints")
-    .update({ status: "resolved" })
+// ✅ Update complaint
+export async function updateComplaint(id: string, updates: any) {
+  const { error } = await supabase
+    .from("complaints_management")
+    .update(updates)
     .eq("id", id)
+
+  if (error) throw error
 }

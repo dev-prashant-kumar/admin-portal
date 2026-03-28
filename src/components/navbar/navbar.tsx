@@ -89,35 +89,6 @@ export default function Navbar() {
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        {/* NOTIFICATIONS */}
-
-        <div className="relative">
-          <button
-            className="
-          p-2
-          rounded-lg
-          hover:bg-slate-100
-          dark:hover:bg-slate-800
-          transition
-          "
-          >
-            <Bell size={18} />
-          </button>
-
-          {/* notification dot */}
-
-          <span
-            className="
-          absolute
-          top-1
-          right-1
-          w-2
-          h-2
-          bg-red-500
-          rounded-full
-          "
-          />
-        </div>
 
         {/* USER PROFILE */}
 
