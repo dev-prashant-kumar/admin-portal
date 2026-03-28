@@ -1,8 +1,7 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState, useRef } from "react"
 import { supabase } from "@/lib/supabaseClient"
-// 1. Import the specific types from Supabase
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
 type Admin = {
@@ -27,40 +26,58 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [admin, setAdmin] = useState<Admin | null>(null)
   const [loading, setLoading] = useState(true)
+  
+  // Use a ref to track if an initial fetch is already in progress
+  const isFetching = useRef(false)
 
   useEffect(() => {
     async function fetchAdmin() {
-      // Using getUser() for better security as discussed before
-      const { data: { user } } = await supabase.auth.getUser()
+      // Prevent concurrent calls from overlapping
+      if (isFetching.current) return
+      isFetching.current = true
 
-      if (!user) {
-        setAdmin(null)
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser()
+
+        if (userError || !user) {
+          setAdmin(null)
+          return
+        }
+
+        const { data: adminData, error: rpcError } = await supabase.rpc("get_current_admin")
+        
+        if (rpcError) {
+          console.error("RPC Error:", rpcError)
+          setAdmin(null)
+        } else {
+          // RPC returns results; handle based on your SQL return type
+          setAdmin(Array.isArray(adminData) ? adminData[0] : adminData || null)
+        }
+      } catch (err) {
+        console.error("Auth fetch failed:", err)
+      } finally {
         setLoading(false)
-        return
+        isFetching.current = false
       }
-
-      const { data: adminData } = await supabase.rpc("get_current_admin")
-
-      // RPC usually returns an array or single object depending on your SQL logic
-      setAdmin(adminData?.[0] || null)
-      setLoading(false)
     }
 
+    // Initialize
     fetchAdmin()
 
-    // 2. Explicitly type the parameters here
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
-      if (session) {
-        fetchAdmin()
-      } else {
+    } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        await fetchAdmin()
+      } else if (event === 'SIGNED_OUT') {
         setAdmin(null)
         setLoading(false)
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   return (

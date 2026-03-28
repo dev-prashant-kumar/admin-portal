@@ -61,9 +61,9 @@ export default function Sidebar() {
     {
       title: "Users",
       items: [
-        { label: "Workers", icon: Users, path: "/" },
-        { label: "Recruiters", icon: UserCheck, path: "/" },
-        { label: "Admins", icon: Shield, path: "/" },
+        { label: "Workers", icon: Users, path: "/admin/worker" },
+        { label: "Recruiters", icon: UserCheck, path: "/admin/recruiter" },
+        { label: "Admins", icon: Shield, path: "/admin/admin-users" },
         { label: "Blocked Users", icon: UserX, path: "/" },
       ],
     },
