@@ -50,11 +50,14 @@ export async function getActivitySummary(): Promise<ActivitySummary> {
     return { total: 0, jobs: 0, users: 0, complaints: 0 }
   }
 
+  // ✅ FIX: TYPE THE DATA
+  const typedData = data as { activity_type: string }[]
+
   return {
-    total: data.length,
-    jobs: data.filter(d => d.activity_type === "job").length,
-    users: data.filter(d => d.activity_type === "user").length,
-    complaints: data.filter(d => d.activity_type === "complaint").length
+    total: typedData.length,
+    jobs: typedData.filter((d) => d.activity_type === "job").length,
+    users: typedData.filter((d) => d.activity_type === "user").length,
+    complaints: typedData.filter((d) => d.activity_type === "complaint").length
   }
 }
 
