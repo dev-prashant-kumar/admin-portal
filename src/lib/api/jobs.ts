@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabaseClient"
 /* GET ALL JOBS */
 export async function getJobs() {
   const { data } = await supabase
-    .from("job_moderation")
+    .from("jobs")
     .select("*")
     .order("created_at", { ascending: false })
 
@@ -32,7 +32,7 @@ export async function approveJob(id: string) {
 /* REJECT JOB */
 export async function rejectJob(id: string) {
   return await supabase
-    .from("job_moderation")
+    .from("jobs")
     .update({ status: "rejected" })
     .eq("id", id)
 }
@@ -40,9 +40,17 @@ export async function rejectJob(id: string) {
 /* DELETE JOB */
 export async function deleteJob(id: string) {
   return await supabase
-    .from("job_moderation")
+    .from("jobs")
     .delete()
     .eq("id", id)
+}
+export async function markFakeJob(id: number, value: boolean) {
+  const { error } = await supabase
+    .from("jobs")
+    .update({ is_fake: value })
+    .eq("id", id)
+
+  if (error) throw error
 }
 
 /* GET REJECTED JOBS COUNT */
@@ -93,4 +101,15 @@ export async function getJobsPostedOverTime(): Promise<JobChartData[]> {
   return Object.entries(grouped)
     .map(([month, jobs]) => ({ month, jobs }))
     .sort((a, b) => monthsOrder.indexOf(a.month) - monthsOrder.indexOf(b.month));
+}
+
+export async function getReportedJobs() {
+  const { data, error } = await supabase
+    .from("jobs")
+    .select("*")
+    .eq("is_fake", true)   // ✅ ONLY FAKE JOBS
+    .order("created_at", { ascending: false })
+
+  if (error) throw error
+  return data
 }

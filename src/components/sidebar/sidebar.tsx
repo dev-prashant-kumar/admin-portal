@@ -10,25 +10,10 @@ import {
   ClipboardList,
   Users,
   UserCheck,
-  UserX,
   Shield,
   Briefcase,
-  Clock,
   AlertTriangle,
   FileText,
-  CreditCard,
-  Receipt,
-  TrendingUp,
-  MessageCircleWarning,
-  Flag,
-  FileEdit,
-  Megaphone,
-  HelpCircle,
-  Activity,
-  Lock,
-  Settings,
-  ShieldCheck,
-  DatabaseBackup,
   Menu,
   ChevronLeft,
 } from "lucide-react";
@@ -64,96 +49,28 @@ export default function Sidebar() {
         { label: "Workers", icon: Users, path: "/admin/worker" },
         { label: "Recruiters", icon: UserCheck, path: "/admin/recruiter" },
         { label: "Admins", icon: Shield, path: "/admin/admin-users" },
-        { label: "Blocked Users", icon: UserX, path: "/" },
       ],
     },
 
     {
       title: "Jobs",
       items: [
-        { label: "All Jobs", icon: Briefcase, path: "/" },
-        {
-          label: "Pending Approvals",
-          icon: Clock,
-          path: "/",
-        },
+        { label: "All Jobs", icon: Briefcase, path: "/admin/jobs" },
+        
         {
           label: "Reported Jobs",
           icon: AlertTriangle,
-          path: "/",
+          path: "/admin/reported-jobs",
         },
       ],
     },
 
     {
-      title: "Recruitment",
+      title: "Export Data",
       items: [
-        { label: "Applications", icon: FileText, path: "/" },
-        { label: "Hired Candidates", icon: UserCheck, path: "/" },
-        { label: "Rejected Candidates", icon: UserX, path: "/" },
-      ],
-    },
-
-    {
-      title: "Finance",
-      items: [
-        {
-          label: "Transactions",
-          icon: CreditCard,
-          path: "/",
-        },
-        { label: "Invoices", icon: Receipt, path: "/" },
-        {
-          label: "Revenue Analytics",
-          icon: TrendingUp,
-          path: "/",
-        },
-      ],
-    },
-
-    {
-      title: "Support",
-      items: [
-        {
-          label: "Complaints",
-          icon: MessageCircleWarning,
-          path: "/",
-        },
-        { label: "Reports", icon: Flag, path: "/" },
-      ],
-    },
-
-    {
-      title: "Content",
-      items: [
-        { label: "CMS", icon: FileEdit, path: "/" },
-        {
-          label: "Announcements",
-          icon: Megaphone,
-          path: "s",
-        },
-        { label: "FAQ", icon: HelpCircle, path: "/" },
-      ],
-    },
-
-    {
-      title: "System",
-      items: [
-        {
-          label: "System Monitoring",
-          icon: Activity,
-          path: "/",
-        },
-        { label: "Backups", icon: DatabaseBackup, path: "/" },
-      ],
-    },
-
-    {
-      title: "Settings",
-      items: [
-        { label: "Admin Roles", icon: ShieldCheck, path: "/" },
-        { label: "Security", icon: Lock, path: "/" },
-        { label: "Platform Settings", icon: Settings, path: "/" },
+        { label: "jobs", icon: FileText, path: "/admin/export-jobs" },
+        { label: "Candidates", icon: UserCheck, path: "/admin/export-workers" },
+        { label: "Recruiters", icon: Users, path: "/admin/export-recruiters" },
       ],
     },
   ];
