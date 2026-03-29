@@ -3,14 +3,7 @@
 import { useEffect, useState, cloneElement } from "react";
 import { getWorkers, updateWorker, deleteWorker } from "@/lib/api/users";
 
-import {
-  Edit2,
-  Trash2,
-  Mail,
-  Phone,
-  X,
-  CheckCircle2,
-} from "lucide-react";
+import { Edit2, Trash2, Mail, Phone, X, CheckCircle2 } from "lucide-react";
 
 type Worker = {
   id: number;
@@ -102,10 +95,10 @@ export default function WorkersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1f] text-slate-900 dark:text-slate-200 p-4 md:p-8 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1f] text-slate-900 dark:text-slate-200 px-4 sm:px-6 md:px-8 py-6 transition-colors">
       <div className="max-w-6xl mx-auto">
         {/* HEADER */}
-        <div className="flex flex-col md:flex-row justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
           <div>
             <h1 className="text-3xl font-black bg-gradient-to-r from-indigo-700 to-cyan-500 bg-clip-text text-transparent">
               Workers Dashboard
@@ -114,7 +107,7 @@ export default function WorkersPage() {
               Manage workers
             </p>
           </div>
-          <div className="relative w-full md:w-72 group">
+          <div className="relative w-full md:w-72 group mt-2 md:mt-0">
             {/* Input */}
             <input
               type="text"
@@ -140,302 +133,371 @@ export default function WorkersPage() {
         </div>
 
         {/* TABLE */}
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/10">
-              <tr>
-                <th className="p-4 text-left">Worker</th>
-                <th className="p-4 text-left">Skills</th>
-                <th className="p-4 text-left">Status</th>
-                <th className="p-4 text-left">Joined</th>
-                <th className="p-4 text-right">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {loading ? (
+        <div className= "hidden md:block bg-white dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-175 text-sm">
+              <thead className="bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/10">
                 <tr>
-                  <td colSpan={5} className="p-6 text-center">
-                    <div className="flex justify-center items-center gap-2">
-                      <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                      <span className="text-sm text-slate-500">
-                        Loading workers...
-                      </span>
-                    </div>
-                  </td>
+                  <th className="p-4 text-left">Worker</th>
+                  <th className="p-4 text-left">Skills</th>
+                  <th className="p-4 text-left">Status</th>
+                  <th className="p-4 text-left">Joined</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
-              ) : filteredWorkers.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="p-6 text-center text-slate-400">
-                    No workers found
-                  </td>
-                </tr>
-              ) : (
-                filteredWorkers.map((worker) => (
-                  <tr
-                    key={worker.id}
-                    className="border-t border-slate-200 dark:border-white/5 hover:bg-indigo-50 dark:hover:bg-indigo-500/5 transition"
-                  >
-                    <td className="p-4">
-                      <div className="flex gap-3 items-center">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-xs font-bold text-white">
-                          {(worker.name || "W")[0]}
-                        </div>
+              </thead>
 
-                        <div>
-                          <p className="font-medium text-slate-900 dark:text-white">
-                            {worker.name || "Unknown"}
-                          </p>
-
-                          <div className="text-xs text-slate-500 dark:text-slate-400 flex flex-col">
-                            <span className="flex items-center gap-1">
-                              <Mail className="h-3 w-3" />
-                              {worker.email || "No email"}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Phone className="h-3 w-3" />
-                              {worker.phone || "No phone"}
-                            </span>
-                          </div>
-                        </div>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="p-6 text-center">
+                      <div className="flex justify-center items-center gap-2">
+                        <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-sm text-slate-500">
+                          Loading workers...
+                        </span>
                       </div>
-                    </td>
-
-                    <td className="p-4">
-                      <div className="flex flex-wrap gap-1">
-                        {(worker.skills || "No skills")
-                          .split(",")
-                          .map((skill, i) => (
-                            <span
-                              key={i}
-                              className="px-2 py-1 text-[10px] rounded-full 
-          bg-indigo-100 text-indigo-600 
-          dark:bg-indigo-500/10 dark:text-indigo-400"
-                            >
-                              {skill.trim()}
-                            </span>
-                          ))}
-                      </div>
-                    </td>
-
-                    <td className="p-4">
-                      <StatusBadge status={worker.status} />
-                    </td>
-
-                    <td className="p-4 text-xs text-slate-500 dark:text-slate-400">
-                      {new Date(worker.created_at).toLocaleDateString()}
-                    </td>
-
-                    <td className="p-4 text-right">
-                      <button
-                        onClick={() => {
-                          setSelectedWorker(worker);
-                          setIsEditOpen(true);
-                        }}
-                        className="mr-2 p-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-indigo-100 dark:hover:bg-indigo-500/10 text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedWorker(worker);
-                          setIsDeleteOpen(true);
-                        }}
-                        className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-red-100 dark:hover:bg-red-500/10 text-slate-500 dark:text-slate-400 hover:text-red-500 transition"
-                      >
-                        <Trash2 size={16} />
-                      </button>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : filteredWorkers.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="p-6 text-center text-slate-400">
+                      No workers found
+                    </td>
+                  </tr>
+                ) : (
+                  filteredWorkers.map((worker) => (
+                    <tr
+                      key={worker.id}
+                      className="border-t border-slate-200 dark:border-white/5 hover:bg-indigo-50 dark:hover:bg-indigo-500/5 transition"
+                    >
+                      <td className="p-4">
+                        <div className="flex gap-3 items-center">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-xs font-bold text-white">
+                            {(worker.name || "W")[0]}
+                          </div>
+
+                          <div>
+                            <p className="font-medium text-slate-900 dark:text-white">
+                              {worker.name || "Unknown"}
+                            </p>
+
+                            <div className="text-xs text-slate-500 dark:text-slate-400 flex flex-col">
+                              <span className="flex items-center gap-1">
+                                <Mail className="h-3 w-3" />
+                                {worker.email || "No email"}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Phone className="h-3 w-3" />
+                                {worker.phone || "No phone"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="flex flex-wrap gap-1 max-w-50">
+                          {(worker.skills || "No skills")
+                            .split(",")
+                            .map((skill, i) => (
+                              <span
+                                key={i}
+                                className="px-2 py-1 text-[10px] rounded-full 
+          bg-indigo-100 text-indigo-600 
+          dark:bg-indigo-500/10 dark:text-indigo-400"
+                              >
+                                {skill.trim()}
+                              </span>
+                            ))}
+                        </div>
+                      </td>
+
+                      <td className="p-4">
+                        <StatusBadge status={worker.status} />
+                      </td>
+
+                      <td className="p-4 text-xs text-slate-500 dark:text-slate-400">
+                        {new Date(worker.created_at).toLocaleDateString()}
+                      </td>
+
+                      <td className="p-4">
+                        <div className="flex justify-end flex-wrap gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedWorker(worker);
+                              setIsEditOpen(true);
+                            }}
+                            className="mr-2 p-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-indigo-100 dark:hover:bg-indigo-500/10 text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedWorker(worker);
+                              setIsDeleteOpen(true);
+                            }}
+                            className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-red-100 dark:hover:bg-red-500/10 text-slate-500 dark:text-slate-400 hover:text-red-500 transition"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      {/* TOAST */}
-      {toast && (
-        <div
-          className="fixed bottom-6 right-6 
-        bg-white dark:bg-[#111827] 
-        border border-slate-200 dark:border-white/10 
-        px-4 py-3 rounded-xl shadow-lg flex items-center gap-3"
-        >
-          <CheckCircle2 className="text-green-500" />
-          <p className="text-xs">{toast.message}</p>
-          <button onClick={() => setToast(null)}>
-            <X size={14} />
-          </button>
-        </div>
-      )}
+        {/* MOBILE CARDS */}
+        <div className="md:hidden space-y-4">
+          {filteredWorkers.map((w) => (
+            <div
+              key={w.id}
+              className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm"
+            >
+              {/* TOP */}
+              <div className="flex justify-between items-center">
+                <div className="flex gap-3 items-center">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center font-bold">
+                    {(w.name || "W")[0]}
+                  </div>
 
-      {/* EDIT MODAL */}
-      {isEditOpen && selectedWorker && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div
-            className="w-full max-w-md bg-white dark:bg-[#111827] 
-    border border-slate-200 dark:border-white/10 
-    rounded-2xl shadow-2xl p-6"
-          >
-            {/* HEADER */}
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                Edit Worker
-              </h2>
-              <button
-                onClick={() => setIsEditOpen(false)}
-                className="text-slate-400 hover:text-red-500 transition"
-              >
-                <X size={18} />
-              </button>
-            </div>
+                  <div>
+                    <p className="font-semibold text-sm">{w.name}</p>
+                    <p className="text-xs text-slate-500">{w.email}</p>
+                  </div>
+                </div>
 
-            {/* FORM */}
-            <div className="space-y-4">
-              {/* NAME */}
-              <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  Full Name
-                </label>
-                <input
-                  className="mt-1 w-full px-3 py-2 rounded-lg text-sm
-            bg-slate-100 dark:bg-[#0f172a]
-            border border-slate-300 dark:border-slate-700
-            text-slate-900 dark:text-slate-200
-            focus:ring-2 focus:ring-indigo-500/40 outline-none"
-                  value={selectedWorker.name || ""}
-                  onChange={(e) =>
-                    setSelectedWorker({
-                      ...selectedWorker,
-                      name: e.target.value,
-                    })
-                  }
-                />
-              </div>
-
-              {/* EMAIL */}
-              <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  Email
-                </label>
-                <input
-                  className="mt-1 w-full px-3 py-2 rounded-lg text-sm
-            bg-slate-100 dark:bg-[#0f172a]
-            border border-slate-300 dark:border-slate-700
-            text-slate-900 dark:text-slate-200
-            focus:ring-2 focus:ring-indigo-500/40 outline-none"
-                  value={selectedWorker.email || ""}
-                  onChange={(e) =>
-                    setSelectedWorker({
-                      ...selectedWorker,
-                      email: e.target.value,
-                    })
-                  }
-                />
-              </div>
-
-              {/* PHONE */}
-              <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  Phone Number
-                </label>
-                <input
-                  className="mt-1 w-full px-3 py-2 rounded-lg text-sm
-            bg-slate-100 dark:bg-[#0f172a]
-            border border-slate-300 dark:border-slate-700
-            text-slate-900 dark:text-slate-200
-            focus:ring-2 focus:ring-indigo-500/40 outline-none"
-                  value={selectedWorker.phone || ""}
-                  onChange={(e) =>
-                    setSelectedWorker({
-                      ...selectedWorker,
-                      phone: e.target.value,
-                    })
-                  }
-                />
+                <StatusBadge status={w.status} />
               </div>
 
               {/* SKILLS */}
-              <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  Skills
-                </label>
-                <input
-                  placeholder="e.g. plumber, electrician"
-                  className="mt-1 w-full px-3 py-2 rounded-lg text-sm
-            bg-slate-100 dark:bg-[#0f172a]
-            border border-slate-300 dark:border-slate-700
-            text-slate-900 dark:text-slate-200
-            focus:ring-2 focus:ring-indigo-500/40 outline-none"
-                  value={selectedWorker.skills || ""}
-                  onChange={(e) =>
-                    setSelectedWorker({
-                      ...selectedWorker,
-                      skills: e.target.value,
-                    })
-                  }
-                />
+              <div className="mt-3 flex flex-wrap gap-1">
+                {(w.skills || "").split(",").map((s, i) => (
+                  <span
+                    key={i}
+                    className="text-[10px] px-2 py-1 bg-indigo-100 text-indigo-600 rounded-full"
+                  >
+                    {s}
+                  </span>
+                ))}
               </div>
 
-              {/* STATUS */}
-              <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  Status
-                </label>
-                <select
-                  className="mt-1 w-full px-3 py-2 rounded-lg text-sm
-            bg-slate-100 dark:bg-[#0f172a]
-            border border-slate-300 dark:border-slate-700
-            text-slate-900 dark:text-slate-200
-            focus:ring-2 focus:ring-indigo-500/40 outline-none"
-                  value={selectedWorker.status || "active"}
-                  onChange={(e) =>
-                    setSelectedWorker({
-                      ...selectedWorker,
-                      status: e.target.value as any,
-                    })
-                  }
-                >
-                  <option value="active">Active</option>
-                  <option value="pending">Pending</option>
-                  <option value="inactive">Inactive</option>
-                </select>
+              {/* FOOTER */}
+              <div className="mt-4 flex justify-between items-center text-xs text-slate-500">
+                <span>{new Date(w.created_at).toLocaleDateString()}</span>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setSelectedWorker(w);
+                      setIsEditOpen(true);
+                    }}
+                    className="px-3 py-1 bg-indigo-500 text-white rounded-lg"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setSelectedWorker(w);
+                      setIsDeleteOpen(true);
+                    }}
+                    className="px-3 py-1 bg-red-500 text-white rounded-lg"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
+          ))}
+        </div>
 
-            {/* ACTIONS */}
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setIsEditOpen(false)}
-                className="flex-1 py-2 rounded-lg text-sm border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-              >
-                Cancel
-              </button>
+        {/* TOAST */}
+        {toast && (
+          <div
+            className="fixed bottom-6 right-6 
+        bg-white dark:bg-[#111827] 
+        border border-slate-200 dark:border-white/10 
+        px-4 py-3 rounded-xl shadow-lg flex items-center gap-3"
+          >
+            <CheckCircle2 className="text-green-500" />
+            <p className="text-xs">{toast.message}</p>
+            <button onClick={() => setToast(null)}>
+              <X size={14} />
+            </button>
+          </div>
+        )}
 
-              <button
-                onClick={handleUpdate}
-                className="flex-1 py-2 rounded-lg text-sm bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
-              >
-                Save Changes
-              </button>
+        {/* EDIT MODAL */}
+        {isEditOpen && selectedWorker && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div
+              className="w-full max-w-md mx-4 bg-white dark:bg-[#111827] 
+    border border-slate-200 dark:border-white/10 
+    rounded-2xl shadow-2xl p-6"
+            >
+              {/* HEADER */}
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Edit Worker
+                </h2>
+                <button
+                  onClick={() => setIsEditOpen(false)}
+                  className="text-slate-400 hover:text-red-500 transition"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* FORM */}
+              <div className="space-y-4">
+                {/* NAME */}
+                <div>
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    Full Name
+                  </label>
+                  <input
+                    className="mt-1 w-full px-3 py-2 rounded-lg text-sm
+            bg-slate-100 dark:bg-[#0f172a]
+            border border-slate-300 dark:border-slate-700
+            text-slate-900 dark:text-slate-200
+            focus:ring-2 focus:ring-indigo-500/40 outline-none"
+                    value={selectedWorker.name || ""}
+                    onChange={(e) =>
+                      setSelectedWorker({
+                        ...selectedWorker,
+                        name: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                {/* EMAIL */}
+                <div>
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    Email
+                  </label>
+                  <input
+                    className="mt-1 w-full px-3 py-2 rounded-lg text-sm
+            bg-slate-100 dark:bg-[#0f172a]
+            border border-slate-300 dark:border-slate-700
+            text-slate-900 dark:text-slate-200
+            focus:ring-2 focus:ring-indigo-500/40 outline-none"
+                    value={selectedWorker.email || ""}
+                    onChange={(e) =>
+                      setSelectedWorker({
+                        ...selectedWorker,
+                        email: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                {/* PHONE */}
+                <div>
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    Phone Number
+                  </label>
+                  <input
+                    className="mt-1 w-full px-3 py-2 rounded-lg text-sm
+            bg-slate-100 dark:bg-[#0f172a]
+            border border-slate-300 dark:border-slate-700
+            text-slate-900 dark:text-slate-200
+            focus:ring-2 focus:ring-indigo-500/40 outline-none"
+                    value={selectedWorker.phone || ""}
+                    onChange={(e) =>
+                      setSelectedWorker({
+                        ...selectedWorker,
+                        phone: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                {/* SKILLS */}
+                <div>
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    Skills
+                  </label>
+                  <input
+                    placeholder="e.g. plumber, electrician"
+                    className="mt-1 w-full px-3 py-2 rounded-lg text-sm
+            bg-slate-100 dark:bg-[#0f172a]
+            border border-slate-300 dark:border-slate-700
+            text-slate-900 dark:text-slate-200
+            focus:ring-2 focus:ring-indigo-500/40 outline-none"
+                    value={selectedWorker.skills || ""}
+                    onChange={(e) =>
+                      setSelectedWorker({
+                        ...selectedWorker,
+                        skills: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                {/* STATUS */}
+                <div>
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    Status
+                  </label>
+                  <select
+                    className="mt-1 w-full px-3 py-2 rounded-lg text-sm
+            bg-slate-100 dark:bg-[#0f172a]
+            border border-slate-300 dark:border-slate-700
+            text-slate-900 dark:text-slate-200
+            focus:ring-2 focus:ring-indigo-500/40 outline-none"
+                    value={selectedWorker.status || "active"}
+                    onChange={(e) =>
+                      setSelectedWorker({
+                        ...selectedWorker,
+                        status: e.target.value as any,
+                      })
+                    }
+                  >
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* ACTIONS */}
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setIsEditOpen(false)}
+                  className="flex-1 py-2 rounded-lg text-sm border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleUpdate}
+                  className="flex-1 py-2 rounded-lg text-sm bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
+                >
+                  Save Changes
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* DELETE MODAL */}
-      {isDeleteOpen && selectedWorker && (
-        <Modal title="Delete Worker" onClose={() => setIsDeleteOpen(false)}>
-          <p className="text-sm mb-3">Delete {selectedWorker.name}?</p>
-          <button
-            onClick={confirmDelete}
-            className="w-full py-2 bg-red-500 text-white rounded text-xs font-bold"
-          >
-            Delete
-          </button>
-        </Modal>
-      )}
+        {/* DELETE MODAL */}
+        {isDeleteOpen && selectedWorker && (
+          <Modal title="Delete Worker" onClose={() => setIsDeleteOpen(false)}>
+            <p className="text-sm mb-3">Delete {selectedWorker.name}?</p>
+            <button
+              onClick={confirmDelete}
+              className="w-full py-2 bg-red-500 text-white rounded text-xs font-bold"
+            >
+              Delete
+            </button>
+          </Modal>
+        )}
+      </div>
     </div>
   );
 }

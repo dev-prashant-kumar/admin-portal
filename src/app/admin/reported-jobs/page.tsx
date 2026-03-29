@@ -1,74 +1,70 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { getReportedJobs, deleteJob, markFakeJob } from "@/lib/api/jobs"
+import { useEffect, useState } from "react";
+import { getReportedJobs, deleteJob, markFakeJob } from "@/lib/api/jobs";
 
-import {
-  Search, Trash2, CheckCircle2, X
-} from "lucide-react"
+import { Search, Trash2, CheckCircle2, X } from "lucide-react";
 
 type Job = {
-  id: number
-  title: string | null
-  company: string | null
-  location: string | null
-  category: string | null
-  job_type: string | null
-  created_at: string
-  is_fake?: boolean
-}
+  id: number;
+  title: string | null;
+  company: string | null;
+  location: string | null;
+  category: string | null;
+  job_type: string | null;
+  created_at: string;
+  is_fake?: boolean;
+};
 
 export default function ReportedJobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [search, setSearch] = useState("")
-  const [loading, setLoading] = useState(true)
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null)
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const [toast, setToast] = useState<any>(null)
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [toast, setToast] = useState<any>(null);
 
   async function fetchJobs() {
-    setLoading(true)
-    const data = await getReportedJobs()
-    setJobs(data || [])
-    setLoading(false)
+    setLoading(true);
+    const data = await getReportedJobs();
+    setJobs(data || []);
+    setLoading(false);
   }
 
   useEffect(() => {
-    fetchJobs()
-  }, [])
+    fetchJobs();
+  }, []);
 
-  const filtered = jobs.filter(j =>
-    (j.title || "").toLowerCase().includes(search.toLowerCase()) ||
-    (j.company || "").toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = jobs.filter(
+    (j) =>
+      (j.title || "").toLowerCase().includes(search.toLowerCase()) ||
+      (j.company || "").toLowerCase().includes(search.toLowerCase())
+  );
 
   async function handleDelete() {
-    if (!selectedJob) return
-    await deleteJob(selectedJob.id)
-    setIsDeleteOpen(false)
-    setToast({ message: "Job permanently deleted" })
-    fetchJobs()
+    if (!selectedJob) return;
+    await deleteJob(selectedJob.id);
+    setIsDeleteOpen(false);
+    setToast({ message: "Job permanently deleted" });
+    fetchJobs();
   }
 
   async function markVerified(job: Job) {
-    await markFakeJob(job.id, false)  // ✅ REMOVE FROM FAKE
-    setToast({ message: "Marked as Verified" })
-    fetchJobs()
+    await markFakeJob(job.id, false); // ✅ REMOVE FROM FAKE
+    setToast({ message: "Marked as Verified" });
+    fetchJobs();
   }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1f] p-6">
       <div className="max-w-6xl mx-auto">
-
         {/* HEADER */}
-        <div className="flex justify-between mb-8">
-          <h1 className="text-2xl font-bold text-red-500">
-            Reported Jobs
-          </h1>
+        <div className="flex flex-col md:flex-row justify-between mb-10 gap-4">
+          <h1 className="text-2xl font-bold text-red-500">Reported Jobs</h1>
 
           <div className="relative">
-            <Search className="absolute left-2 top-2.5 size-4 text-gray-400"/>
+            <Search className="absolute left-2 top-2.5 size-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search reported jobs..."
@@ -93,9 +89,8 @@ export default function ReportedJobsPage() {
         </div>
 
         {/* TABLE */}
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl border rounded-2xl overflow-hidden border border-red-200 dark:border-red-500/20 shadow-xl">
+        <div className="hidden md:block bg-white dark:bg-white/5 backdrop-blur-xl border rounded-2xl overflow-hidden border border-red-200 dark:border-red-500/20 shadow-xl">
           <table className="w-full text-sm">
-
             <thead className="bg-red-50 dark:bg-red-500/5">
               <tr>
                 <th className="p-4 text-left">Job</th>
@@ -125,16 +120,19 @@ export default function ReportedJobsPage() {
                   </td>
                 </tr>
               ) : (
-                filtered.map(job => (
-                  <tr key={job.id} className="border-t hover:bg-red-50 dark:hover:bg-red-500/5">
-
+                filtered.map((job) => (
+                  <tr
+                    key={job.id}
+                    className="border-t hover:bg-red-50 dark:hover:bg-red-500/5"
+                  >
                     {/* JOB + AVATAR */}
                     <td className="p-4">
                       <div className="flex gap-3 items-center">
-
-                        <div className="w-10 h-10 rounded-xl 
+                        <div
+                          className="w-10 h-10 rounded-xl 
                           bg-gradient-to-br from-red-500 to-pink-500 
-                          flex items-center justify-center text-white font-bold">
+                          flex items-center justify-center text-white font-bold"
+                        >
                           {(job.company || "J")[0]}
                         </div>
 
@@ -146,7 +144,6 @@ export default function ReportedJobsPage() {
                             {job.company} • {job.location}
                           </div>
                         </div>
-
                       </div>
                     </td>
 
@@ -167,31 +164,104 @@ export default function ReportedJobsPage() {
 
                     {/* ACTIONS */}
                     <td className="p-4 text-right space-x-2">
-
                       {/* MARK VERIFIED */}
                       <button
                         onClick={() => markVerified(job)}
                         className="p-2 rounded-lg bg-emerald-100 text-emerald-600 hover:bg-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400"
                         title="Mark as Verified"
                       >
-                        <CheckCircle2 size={16}/>
+                        <CheckCircle2 size={16} />
                       </button>
 
                       {/* DELETE */}
                       <button
-                        onClick={() => { setSelectedJob(job); setIsDeleteOpen(true) }}
+                        onClick={() => {
+                          setSelectedJob(job);
+                          setIsDeleteOpen(true);
+                        }}
                         className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-500/10 dark:text-red-400"
                       >
-                        <Trash2 size={16}/>
+                        <Trash2 size={16} />
                       </button>
-
                     </td>
-
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+        {/* MOBILE CARDS */}
+        <div className="md:hidden space-y-4">
+          {loading ? (
+            <div className="flex justify-center items-center gap-2 py-10">
+              <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-sm text-slate-500">
+                Loading reported jobs...
+              </span>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center text-slate-400 py-10">
+              No reported jobs 🎉
+            </div>
+          ) : (
+            filtered.map((job) => (
+              <div
+                key={job.id}
+                className="bg-white dark:bg-[#111827] border border-red-200 dark:border-red-500/20 rounded-2xl p-4 shadow-sm"
+              >
+                {/* TOP */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                    {(job.company || "J")[0]}
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="font-semibold text-slate-900 dark:text-white">
+                      {job.title || "Untitled"}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {job.company} • {job.location}
+                    </div>
+                  </div>
+                </div>
+
+                {/* DETAILS */}
+                <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                  <span className="px-2 py-1 rounded bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400">
+                    {job.job_type}
+                  </span>
+
+                  <span className="px-2 py-1 rounded bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300">
+                    {job.category}
+                  </span>
+
+                  <span className="px-2 py-1 rounded bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400">
+                    Fake
+                  </span>
+                </div>
+
+                {/* ACTIONS */}
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    onClick={() => markVerified(job)}
+                    className="p-2 rounded-lg bg-emerald-100 text-emerald-600 hover:bg-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400"
+                  >
+                    <CheckCircle2 size={16} />
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setSelectedJob(job);
+                      setIsDeleteOpen(true);
+                    }}
+                    className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-500/10 dark:text-red-400"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -202,7 +272,10 @@ export default function ReportedJobsPage() {
             <p className="mb-4 text-sm">
               Delete <b>{selectedJob.title}</b> permanently?
             </p>
-            <button onClick={handleDelete} className="w-full bg-red-500 text-white py-2 rounded">
+            <button
+              onClick={handleDelete}
+              className="w-full bg-red-500 text-white py-2 rounded"
+            >
               Confirm Delete
             </button>
           </div>
@@ -212,13 +285,13 @@ export default function ReportedJobsPage() {
       {/* TOAST */}
       {toast && (
         <div className="fixed bottom-6 right-6 bg-white dark:bg-[#111827] px-4 py-3 rounded-xl shadow flex gap-2 items-center">
-          <CheckCircle2 className="text-green-500"/>
+          <CheckCircle2 className="text-green-500" />
           <span className="text-sm">{toast.message}</span>
-          <button onClick={()=>setToast(null)}>
-            <X size={14}/>
+          <button onClick={() => setToast(null)}>
+            <X size={14} />
           </button>
         </div>
       )}
     </div>
-  )
+  );
 }

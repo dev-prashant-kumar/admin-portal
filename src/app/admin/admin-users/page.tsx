@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  getAdmins,
-  updateAdmin,
-  deleteAdmin,
-  getRoles,
-} from "@/lib/api/users";
+import { getAdmins, updateAdmin, deleteAdmin, getRoles } from "@/lib/api/users";
 import { Edit2, Trash2, Mail, X, Plus, Loader2 } from "lucide-react";
 
 type Admin = {
@@ -154,7 +149,7 @@ export default function AdminUsersPage() {
         </div>
 
         {/* TABLE */}
-        <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+        <div className="hidden md:block bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
           <table className="w-full text-sm text-left">
             <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 uppercase text-[10px] font-bold tracking-wider">
               <tr>
@@ -260,6 +255,94 @@ export default function AdminUsersPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* 📱 MOBILE CARDS */}
+      <div className="md:hidden space-y-4">
+        {loading ? (
+          <p className="text-center text-slate-500">Loading admins...</p>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-slate-400">No admins found</p>
+        ) : (
+          filtered.map((a) => (
+            <div
+              key={a.id}
+              className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow"
+            >
+              {/* TOP */}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl flex items-center justify-center text-sm font-bold">
+                  {a.name[0]}
+                </div>
+
+                <div>
+                  <div className="font-semibold text-sm">{a.name}</div>
+                  <div className="text-xs text-slate-500 flex items-center gap-1">
+                    <Mail size={12} /> {a.email}
+                  </div>
+                </div>
+              </div>
+
+              {/* ROLE */}
+              <div className="mb-2">
+                <span
+                  className={`px-2 py-1 text-[10px] rounded-full font-bold uppercase ${
+                    a.role?.role_name === "superadmin"
+                      ? "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300"
+                      : "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300"
+                  }`}
+                >
+                  {a.role?.role_name || "Guest"}
+                </span>
+              </div>
+
+              {/* STATUS */}
+              <div className="text-xs mb-2">
+                Status:{" "}
+                <span
+                  className={
+                    a.is_active
+                      ? "text-emerald-500 font-medium"
+                      : "text-slate-400"
+                  }
+                >
+                  {a.is_active ? "Active" : "Disabled"}
+                </span>
+              </div>
+
+              {/* LAST LOGIN */}
+              <div className="text-xs text-slate-500 mb-3">
+                Last login:{" "}
+                {a.last_login
+                  ? new Date(a.last_login).toLocaleDateString()
+                  : "Never"}
+              </div>
+
+              {/* ACTIONS */}
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedAdmin(a);
+                    setIsEditOpen(true);
+                  }}
+                  className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:text-indigo-500"
+                >
+                  <Edit2 size={16} />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedAdmin(a);
+                    setIsDeleteOpen(true);
+                  }}
+                  className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:text-red-500"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* --- MODALS SECTION --- */}

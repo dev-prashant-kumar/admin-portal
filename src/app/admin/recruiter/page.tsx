@@ -135,7 +135,7 @@ export default function RecruitersPage() {
         </div>
 
         {/* TABLE */}
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl">
+        <div className="hidden md:block bg-white dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl">
           <table className="w-full text-sm">
             <thead className="bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/10">
               <tr>
@@ -222,6 +222,74 @@ export default function RecruitersPage() {
           </table>
         </div>
       </div>
+
+      {/* MOBILE CARDS */}
+<div className="md:hidden space-y-4 mt-6">
+  {loading ? (
+    <div className="text-center text-sm text-slate-500">
+      Loading recruiters...
+    </div>
+  ) : filtered.length === 0 ? (
+    <div className="text-center text-sm text-slate-400">
+      No recruiters found
+    </div>
+  ) : (
+    filtered.map((r) => (
+      <div
+        key={r.id}
+        className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm"
+      >
+        {/* TOP */}
+        <div className="flex justify-between items-center">
+          <div className="flex gap-3 items-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-white flex items-center justify-center font-bold">
+              {(r.company_name || "R")[0]}
+            </div>
+
+            <div>
+              <p className="font-semibold text-sm text-slate-900 dark:text-white">
+                {r.company_name || "Unknown"}
+              </p>
+
+              <p className="text-xs text-slate-500 flex items-center gap-1">
+                <Phone size={12} />
+                {r.phone || "No phone"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* DETAILS */}
+        <div className="mt-3 text-xs text-slate-500">
+          Joined: {new Date(r.created_at).toLocaleDateString()}
+        </div>
+
+        {/* ACTIONS */}
+        <div className="mt-4 flex justify-end gap-2">
+          <button
+            onClick={() => {
+              setSelectedRecruiter(r);
+              setIsEditOpen(true);
+            }}
+            className="px-3 py-1 text-xs bg-indigo-500 text-white rounded-lg"
+          >
+            Edit
+          </button>
+
+          <button
+            onClick={() => {
+              setSelectedRecruiter(r);
+              setIsDeleteOpen(true);
+            }}
+            className="px-3 py-1 text-xs bg-red-500 text-white rounded-lg"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ))
+  )}
+</div>
 
       {/* TOAST */}
       {toast && (

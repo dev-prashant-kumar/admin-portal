@@ -7,8 +7,11 @@ import {
   Rocket, 
   UserPlus, 
   AlertCircle, 
-  SlidersHorizontal,
-  Loader2
+  Loader2,
+  Briefcase,
+  Users,
+  AlertTriangle,
+  BarChart3
 } from "lucide-react"
 
 export default function ActivityPage() {
@@ -41,25 +44,22 @@ export default function ActivityPage() {
   }, [fetchData])
 
   return (
-    <div className="max-w-7xl mx-auto p-8 space-y-10 min-h-screen bg-slate-50 dark:bg-[#020617]">
+    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-8 min-h-screen bg-slate-50 dark:bg-[#020617]">
 
       {/* HEADER */}
-      <div className="flex justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black bg-gradient-to-r from-indigo-700 to-cyan-500 bg-clip-text text-transparent">Activity</h1>
-          <p className="text-slate-500 text-sm">Real-time system activity logs</p>
+          <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-700 to-cyan-500 bg-clip-text text-transparent">
+            Activity
+          </h1>
+          <p className="text-slate-500 text-xs md:text-sm">
+            Real-time system activity logs
+          </p>
         </div>
-
-        <button className="flex items-center gap-2 px-4 py-2 rounded-xl border 
-        bg-white dark:bg-[#0f172a] border-slate-200 dark:border-white/10 
-        hover:bg-slate-50 dark:hover:bg-indigo-500/10 transition">
-          <SlidersHorizontal size={16} />
-          Customize
-        </button>
       </div>
 
       {/* SUMMARY */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         <SummaryCard label="Total" value={summary?.total || 0} />
         <SummaryCard label="Jobs" value={summary?.jobs || 0} />
         <SummaryCard label="Users" value={summary?.users || 0} />
@@ -67,12 +67,12 @@ export default function ActivityPage() {
       </div>
 
       {/* FILTER */}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {["all","jobs","users","complaints"].map(f => (
           <button
             key={f}
             onClick={() => setFilter(f as any)}
-            className={`px-4 py-1.5 rounded-lg text-sm ${
+            className={`px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm ${
               filter === f
                 ? "bg-indigo-500 text-white"
                 : "bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-300"
@@ -108,12 +108,51 @@ export default function ActivityPage() {
 /* SUMMARY CARD */
 
 function SummaryCard({ label, value }: any) {
+
+  const config: Record<string, any> = {
+    Total: {
+      icon: <BarChart3 size={18} />,
+      bg: "bg-indigo-100 dark:bg-indigo-500/10",
+      color: "text-indigo-600 dark:text-indigo-400"
+    },
+    Jobs: {
+      icon: <Briefcase size={18} />,
+      bg: "bg-blue-100 dark:bg-blue-500/10",
+      color: "text-blue-600 dark:text-blue-400"
+    },
+    Users: {
+      icon: <Users size={18} />,
+      bg: "bg-green-100 dark:bg-green-500/10",
+      color: "text-green-600 dark:text-green-400"
+    },
+    Complaints: {
+      icon: <AlertTriangle size={18} />,
+      bg: "bg-red-100 dark:bg-red-500/10",
+      color: "text-red-600 dark:text-red-400"
+    }
+  }
+
+  const item = config[label] || config.Total
+
   return (
-    <div className="p-5 rounded-xl border 
+    <div className="p-3 md:p-4 rounded-xl border 
     bg-white dark:bg-[#0f172a] 
-    border-slate-200 dark:border-white/10">
-      <p className="text-xs text-slate-500">{label}</p>
-      <h2 className="text-xl font-bold text-slate-900 dark:text-white">{value}</h2>
+    border-slate-200 dark:border-white/10 
+    flex items-center gap-3 md:gap-4">
+
+      {/* ICON */}
+      <div className={`w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-xl ${item.bg} ${item.color}`}>
+        {item.icon}
+      </div>
+
+      {/* TEXT */}
+      <div>
+        <p className="text-xs text-slate-500">{label}</p>
+        <h2 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white">
+          {value}
+        </h2>
+      </div>
+
     </div>
   )
 }
@@ -124,21 +163,21 @@ function TimelineItem({ item }: { item: Activity }) {
   const config = getConfig(item.activity_type)
 
   return (
-    <div className="flex gap-4 items-start">
+    <div className="flex gap-3 md:gap-4 items-start">
 
       {/* ICON */}
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${config.bg}`}>
+      <div className={`w-9 h-9 md:w-10 md:h-10 shrink-0 rounded-xl flex items-center justify-center text-white ${config.bg}`}>
         {config.icon}
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 p-4 rounded-xl border 
+      <div className="flex-1 p-3 md:p-4 rounded-xl border 
       bg-white dark:bg-[#0f172a] 
       border-slate-200 dark:border-white/10 
       hover:bg-slate-50 dark:hover:bg-indigo-500/5 transition">
 
-        <div className="flex justify-between">
-          <span className={`text-xs px-2 py-0.5 rounded-full ${config.badge}`}>
+        <div className="flex flex-col md:flex-row md:justify-between gap-1">
+          <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${config.badge}`}>
             {item.activity_type}
           </span>
 
@@ -147,7 +186,7 @@ function TimelineItem({ item }: { item: Activity }) {
           </span>
         </div>
 
-        <p className="text-sm mt-2 text-slate-700 dark:text-slate-300">
+        <p className="text-sm mt-2 text-slate-700 dark:text-slate-300 break-words">
           {item.description}
         </p>
 

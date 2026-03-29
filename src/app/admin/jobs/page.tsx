@@ -96,7 +96,7 @@ export default function JobsPage() {
         </div>
 
         {/* TABLE */}
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl">
+        <div className="hidden md:block bg-white dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl">
           <table className="w-full text-sm">
             <thead className="bg-slate-100 dark:bg-white/5">
               <tr>
@@ -236,6 +236,75 @@ export default function JobsPage() {
           </div>
         </div>
       )}
+
+      {/* 📱 MOBILE CARDS */}
+      <div className="md:hidden space-y-4">
+        {loading ? (
+          <p className="text-center text-slate-500">Loading jobs...</p>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-slate-400">No jobs found</p>
+        ) : (
+          filtered.map((job) => (
+            <div
+              key={job.id}
+              className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow"
+            >
+              {/* TOP */}
+              <div className="flex gap-3 items-center mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white text-xs font-bold">
+                  {(job.company || job.title || "J")[0].toUpperCase()}
+                </div>
+
+                <div>
+                  <div className="font-semibold text-sm">{job.title}</div>
+                  <div className="text-xs text-slate-500">
+                    {job.company} • {job.location}
+                  </div>
+                </div>
+              </div>
+
+              {/* DETAILS */}
+              <div className="text-xs text-slate-500 space-y-1 mb-3">
+                <div>Category: {job.category}</div>
+                <div>Type: {job.job_type}</div>
+              </div>
+
+              {/* STATUS */}
+              <div className="mb-3">
+                {job.is_fake ? (
+                  <span className="text-xs px-2 py-1 bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400 rounded-full">
+                    Fake
+                  </span>
+                ) : (
+                  <span className="text-xs px-2 py-1 bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 rounded-full">
+                    Verified
+                  </span>
+                )}
+              </div>
+
+              {/* ACTIONS */}
+              <div className="flex justify-end gap-2">
+                <button onClick={() => toggleFake(job)}>
+                  {job.is_fake ? (
+                    <CheckCircle2 size={16} />
+                  ) : (
+                    <AlertTriangle size={16} />
+                  )}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedJob(job);
+                    setIsDeleteOpen(true);
+                  }}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
 
       {/* TOAST */}
       {toast && (
