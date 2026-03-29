@@ -57,7 +57,7 @@ export default function AdminAuth() {
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
-      style={{ backgroundImage: "url('/admin-bg.png')" }}
+      style={{ backgroundImage: "url('/Official Logo.png')" }}
     >
       {/* Background Overlay */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>

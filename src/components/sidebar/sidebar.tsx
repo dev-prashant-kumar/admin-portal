@@ -57,7 +57,7 @@ export default function Sidebar() {
       title: "Jobs",
       items: [
         { label: "All Jobs", icon: Briefcase, path: "/admin/jobs" },
-        
+
         {
           label: "Reported Jobs",
           icon: AlertTriangle,
@@ -74,7 +74,7 @@ export default function Sidebar() {
         { label: "Recruiters", icon: Users, path: "/admin/export-recruiters" },
       ],
     },
-     {
+    {
       title: "Support",
       items: [
         {
@@ -133,8 +133,12 @@ export default function Sidebar() {
         />
         {/* HEADER */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="w-9 h-9 rounded-lg bg-linear-to-r from-blue-600 via-orange-500 to-green-600 flex items-center justify-center text-white font-bold">
-            12th
+          <div className="w-14 h-11 rounded-lg overflow-hidden border border-slate-200 dark:border-white/10">
+            <img
+              src="/Official Logo.png" // 👈 put your logo in /public folder
+              alt="logo"
+              className="w-full h-full object-cover"
+            />
           </div>
 
           {!collapsed && (
@@ -161,10 +165,10 @@ export default function Sidebar() {
                 const active = pathname === item.path;
 
                 return (
-    <Link
-      key={item.label}
-      href={item.path}
-      className={`
+                  <Link
+                    key={item.label}
+                    href={item.path}
+                    className={`
         group relative flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all
         ${
           active
@@ -172,16 +176,23 @@ export default function Sidebar() {
             : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
         }
       `}
-    >
-      {/* Active Indicator: A simple vertical pill */}
-      {active && (
-        <div className="absolute left-0 w-1 h-6 bg-indigo-500 rounded-r-full" />
-      )}
-      
-      <Icon size={18} className={active ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"} />
-      {!collapsed && <span>{item.label}</span>}
-    </Link>
-  );
+                  >
+                    {/* Active Indicator: A simple vertical pill */}
+                    {active && (
+                      <div className="absolute left-0 w-1 h-6 bg-indigo-500 rounded-r-full" />
+                    )}
+
+                    <Icon
+                      size={18}
+                      className={
+                        active
+                          ? "text-indigo-600 dark:text-indigo-400"
+                          : "text-slate-400"
+                      }
+                    />
+                    {!collapsed && <span>{item.label}</span>}
+                  </Link>
+                );
               })}
             </div>
           ))}

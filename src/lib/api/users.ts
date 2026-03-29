@@ -94,16 +94,38 @@ export async function getAdmins() {
   const { data, error } = await supabase
     .from("admin_users")
     .select(`
-      *,
+      id,
+      name,
+      email,
+      is_active,
+      created_at,
+      last_login,
+      auth_user_id,
       role:admin_roles (
         id,
         role_name,
         description
       )
     `)
-    .order("created_at", { ascending: false })
 
-  if (error) throw error
+  if (error) {
+    console.error("Error fetching admins:", error)
+    return []
+  }
+
+  return data
+}
+
+export async function getRoles() {
+  const { data, error } = await supabase
+    .from("admin_roles")
+    .select("*")
+
+  if (error) {
+    console.error(error)
+    return []
+  }
+
   return data
 }
 
@@ -121,6 +143,34 @@ export async function deleteAdmin(id: string) {
     .from("admin_users")
     .delete()
     .eq("id", id)
+
+  if (error) throw error
+}
+
+/* 🔥 CREATE ADMIN */
+
+export async function createAdmin(data: {
+  name: string
+  email: string
+  password: string
+  role_id: string
+}) {
+  // 1️⃣ Create auth user
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    email: data.email,
+    password: data.password,
+    email_confirm: true
+  })
+
+  if (authError) throw authError
+
+  // 2️⃣ Insert into admin_users
+  const { error } = await supabase.from("admin_users").insert({
+    name: data.name,
+    email: data.email,
+    role_id: data.role_id,
+    auth_user_id: authData.user.id
+  })
 
   if (error) throw error
 }

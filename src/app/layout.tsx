@@ -27,6 +27,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Admin Dashboard",
   description: "12thfailjobs.com",
+  icons: {
+    icon: '/Official Logo.png', // Points to public/logo.png
+    shortcut: '/Official Logo.png',
+    apple: '/Official Logo.png',
+  },
 };
 
 export default function RootLayout({
